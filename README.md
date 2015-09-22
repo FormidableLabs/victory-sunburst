@@ -15,3 +15,4 @@ The plain component has baked-in sample data and defaults, so rendering the sunb
 
 Will look like this:
 
+![Sunburst Image](https://raw.githubusercontent.com/FormidableLabs/victory-sunburst/master/sunburst.jpg)
