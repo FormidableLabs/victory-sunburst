@@ -1,18 +1,17 @@
 [![Travis Status][trav_img]][trav_site]
 
-Starter Victory Component
-=========================
+Victory Sunburst
+=============
 
-UPDATE THIS README!
+`victory-sunburst` draws an SVG sunburst chart with [React](https://github.com/facebook/react) and [D3](https://github.com/mbostock/d3). Styles and data can be customized by passing in your own values as properties to the component. Data changes are (not yet) animated with [victory-animation](https://github.com/FormidableLabs/victory-animation).
 
-## Development
+##Examples
 
-Please see [DEVELOPMENT](DEVELOPMENT.md)
+The plain component has baked-in sample data, style, angle, and sort defaults, so rendering the pie with no custom properties, like so:
 
-## Contributing
+``` javascript
+<VictorySunburst/>
+```
 
-Please see [CONTRIBUTING](CONTRIBUTING.md)
-
-[trav_img]: https://api.travis-ci.org/FormidableLabs/victory-sunburst.svg
-[trav_site]: https://travis-ci.org/FormidableLabs/victory-sunburst
+Will look like this:
 
