@@ -7,7 +7,7 @@ Victory Sunburst
 
 ##Examples
 
-The plain component has baked-in sample data, style, angle, and sort defaults, so rendering the pie with no custom properties, like so:
+The plain component has baked-in sample data and defaults, so rendering the sunburst with no custom properties, like so:
 
 ``` javascript
 <VictorySunburst/>
