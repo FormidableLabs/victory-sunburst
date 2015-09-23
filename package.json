@@ -1,6 +1,6 @@
 {
   "name": "victory-sunburst",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Victory Component",
   "main": "lib/index.js",
   "repository": {
