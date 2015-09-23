@@ -23,7 +23,7 @@ Will look like this:
 ### Props
 
 All props are *optional*. They can be omitted and the component will
-still render with random datat.
+still render with random data.
 
 The following props are supported:
 
