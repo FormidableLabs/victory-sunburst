@@ -1,6 +1,7 @@
 import React from "react";
 import Radium from "radium";
 import d3 from "d3";
+import flare from "../../flare.js";
 
 // import _ from "lodash";
 
@@ -59,7 +60,6 @@ class VictorySunburst extends React.Component {
 }
 
 VictorySunburst.propTypes = {
-  color: React.PropTypes.string,
   width: React.PropTypes.number,
   height: React.PropTypes.number,
   data: React.PropTypes.object,
@@ -69,6 +69,7 @@ VictorySunburst.propTypes = {
 VictorySunburst.defaultProps = {
   width: 700,
   height: 700,
+  data: flare,
   radius: (width, height) => {
     return Math.min(width, height) / 2;
   }
