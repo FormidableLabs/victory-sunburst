@@ -1,4 +1,5 @@
-const flare = {
+"use strict";
+var flare = {
  "name": "flare",
  "children": [
   {
@@ -377,6 +378,6 @@ const flare = {
    ]
   }
  ]
-}
+};
 
-export default flare;
+module.exports = flare;
