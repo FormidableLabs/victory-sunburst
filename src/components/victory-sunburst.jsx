@@ -64,7 +64,7 @@ VictorySunburst.propTypes = {
 };
 
 VictorySunburst.defaultProps = {
-  width: 960,
+  width: 700,
   height: 700,
   radius: (width, height) => { return Math.min(width, height) / 2 },
 }
