@@ -29,7 +29,7 @@ The following props are supported:
 
 ####**data**
 
-*An array of objects.* If the `data` prop is omitted, the sunburst will render sample data. The data has the format:
+*An object, with nested properties to make up the tree datastructure as shown below.* If the `data` prop is omitted, the sunburst will render sample data. The data has the format:
 
 ```
 {
