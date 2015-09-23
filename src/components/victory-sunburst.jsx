@@ -1,13 +1,14 @@
 import React from "react";
 import Radium from "radium";
 import d3 from "d3";
-import _ from "lodash";
+
+// import _ from "lodash";
 
 @Radium
 class VictorySunburst extends React.Component {
 
 
-  drawSunburst () {
+  drawSunburst() {
     const x = d3.scale.linear()
         .range([0, 2 * Math.PI]);
 
@@ -18,7 +19,7 @@ class VictorySunburst extends React.Component {
 
     const partition = d3.layout.partition()
         .sort(null)
-        .value((d) => { return 1; });
+        .value(() => { return 1; }); // value will pass in d to lambda
 
     const arc = d3.svg.arc()
       .startAngle((d) => { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -30,17 +31,15 @@ class VictorySunburst extends React.Component {
       return (
         <g>
         <path
-          d={ arc(node) }
-          fill={color( (node.children ? node : node.parent).name) }
+          d={arc(node)}
+          fill={color((node.children ? node : node.parent).name)}
           stroke={"white"}/>
         </g>
-      )
-    })
+      );
+    });
 
     return sunburstArcs;
   }
-
-
 
   render() {
     return (
@@ -60,13 +59,19 @@ class VictorySunburst extends React.Component {
 }
 
 VictorySunburst.propTypes = {
-  color: React.PropTypes.string
+  color: React.PropTypes.string,
+  width: React.PropTypes.number,
+  height: React.PropTypes.number,
+  data: React.PropTypes.object,
+  radius: React.PropTypes.func
 };
 
 VictorySunburst.defaultProps = {
   width: 700,
   height: 700,
-  radius: (width, height) => { return Math.min(width, height) / 2 },
-}
+  radius: (width, height) => {
+    return Math.min(width, height) / 2;
+  }
+};
 
 export default VictorySunburst;
