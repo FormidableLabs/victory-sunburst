@@ -1,8 +1,9 @@
+/* eslint-disable no-magic-numbers */
 import React from "react";
 import filesize from "filesize";
 import { VictorySunburst } from "../src/index";
-import buildHierarchy from "./buildHierarchy";
-import stats from "json!./stats.json";
+import { buildHierarchy } from "./utils";
+import stats from "json!./stats.json"; // eslint-disable-line import/no-unresolved
 
 const data = buildHierarchy(stats.modules);
 const fontSize = 16;

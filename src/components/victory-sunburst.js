@@ -20,9 +20,10 @@ class VictorySunburst extends React.Component {
     data: PropTypes.object,
     displayCore: PropTypes.bool,
     height: CustomPropTypes.nonNegative,
-    onArcHover: PropTypes.func,
     minRadians: CustomPropTypes.nonNegative,
+    onArcHover: PropTypes.func,
     radius: PropTypes.func,
+    sort: PropTypes.bool,
     width: CustomPropTypes.nonNegative
   };
 
@@ -33,7 +34,7 @@ class VictorySunburst extends React.Component {
     height: 700,
     minRadians: 0,
     radius: (width, height) => Math.min(width, height) / 2,
-    sort: PropTypes.bool,
+    sort: true,
     width: 700
   };
 
