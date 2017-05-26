@@ -8,6 +8,7 @@ import stats from "json!./stats.json"; // eslint-disable-line import/no-unresolv
 const data = buildHierarchy(stats.modules);
 const fontSize = 16;
 const lineHeight = fontSize * 1.5;
+const size = 800;
 
 export default class App extends React.Component {
   constructor() {
@@ -24,12 +25,14 @@ export default class App extends React.Component {
     const { activeNode } = this.state;
 
     return (
-      <svg height={700} width={700}>
+      <svg height={size} width={size}>
         <VictorySunburst
           data={data}
           onArcHover={this.handleArcHover}
+          height={size}
+          width={size}
         />
-        <g transform={`translate(${350},${350})`}>
+        <g transform={`translate(${size / 2},${size / 2})`}>
           {activeNode ? (
             <text fill="black" fontSize={fontSize} textAnchor="middle" fontFamily="Helvetica">
               <tspan x="0" dy={-lineHeight}>
