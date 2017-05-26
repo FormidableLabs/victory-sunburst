@@ -87,6 +87,7 @@ class VictorySunburst extends React.Component {
         display={node.depth || displayCore ? null : "none"}
         fill={color((node.children ? node : node.parent).data.name)}
         onMouseOver={() => onArcHover(node)}
+        onMouseOut={() => onArcHover()}
         style={{ cursor: "pointer" }}
         stroke="white"
       />
