@@ -20,6 +20,7 @@ class VictorySunburst extends React.Component {
     data: PropTypes.object,
     displayCore: PropTypes.bool,
     height: CustomPropTypes.nonNegative,
+    onArcHover: PropTypes.func,
     minRadians: CustomPropTypes.nonNegative,
     radius: PropTypes.func,
     width: CustomPropTypes.nonNegative
@@ -36,11 +37,6 @@ class VictorySunburst extends React.Component {
     width: 700
   };
 
-  constructor() {
-    super();
-    this.state = {};
-  }
-
   drawSunburst() {
     const {
       colorScale,
@@ -48,10 +44,12 @@ class VictorySunburst extends React.Component {
       displayCore,
       height,
       minRadians,
+      onArcHover,
       radius: getRadius,
       sort,
       width
     } = this.props;
+
     const radius = getRadius(width, height);
     const color = d3Scale.scaleOrdinal(colorScale);
     const partition = d3Hierarchy.partition();
@@ -87,8 +85,7 @@ class VictorySunburst extends React.Component {
         d={arc(node)}
         display={node.depth || displayCore ? null : "none"}
         fill={color((node.children ? node : node.parent).data.name)}
-        onMouseEnter={() => this.onArcHover(node)}
-        onMouseLeave={() => this.onArcHover()}
+        onMouseOver={() => onArcHover(node)}
         style={{ cursor: "pointer" }}
         stroke="white"
       />
@@ -97,28 +94,12 @@ class VictorySunburst extends React.Component {
     return sunburstArcs;
   }
 
-  onArcHover(activeNode) {
-    this.setState({ activeNode });
-  }
-
   render() {
     const { height, width } = this.props;
-    const { activeNode } = this.state;
 
     return (
       <svg width={width} height={height}>
         <g transform={`translate(${width / 2},${height / 2})`}>
-          {activeNode ? (
-            <text fill="black" fontSize={20} textAnchor="middle" fontFamily="Helvetica">
-              <tspan x="0">
-                {activeNode.data.name}
-              </tspan>
-              <tspan x="0" dy={20}>
-                {`${(Math.abs(activeNode.x1 - activeNode.x0) * 100).toFixed(2)}%`}
-              </tspan>
-              <tspan x="0" dy={20}>{"of bundle size"}</tspan>
-            </text>
-          ) : null}
           {this.drawSunburst()}
         </g>
       </svg>
