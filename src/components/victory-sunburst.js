@@ -32,6 +32,7 @@ class VictorySunburst extends React.Component {
     height: 700,
     minRadians: 0,
     radius: (width, height) => Math.min(width, height) / 2,
+    sort: PropTypes.bool,
     width: 700
   };
 
@@ -48,6 +49,7 @@ class VictorySunburst extends React.Component {
       height,
       minRadians,
       radius: getRadius,
+      sort,
       width
     } = this.props;
     const radius = getRadius(width, height);
@@ -70,7 +72,9 @@ class VictorySunburst extends React.Component {
       .sum((d) => {
         return d.children ? 0 : 1;
       })
-      .sort(null);
+      .sort(sort ? (a, b) => {
+        return b.value - a.value;
+      } : null);
 
     const nodes = partition(root).descendants()
       .filter((d) => {
