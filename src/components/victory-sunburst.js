@@ -1,14 +1,35 @@
 /* eslint-disable no-magic-numbers */
 import React from "react";
 import PropTypes from "prop-types";
-import { PropTypes as CustomPropTypes } from "victory-core";
-import * as d3Hierarchy from "d3-hierarchy";
-import * as d3Scale from "d3-scale";
-import * as d3Shape from "d3-shape";
+import { partialRight } from "lodash";
+import {
+  addEvents, Helpers, PropTypes as CustomPropTypes, VictoryContainer, VictoryTheme
+} from "victory-core";
+
+import SunburstHelpers from "./helper-methods";
 import flare from "../../flare.js";
+
+const fallbackProps = {
+  height: 700,
+  padding: 30,
+  width: 700,
+  colorScale: [
+    "#ffffff",
+    "#f0f0f0",
+    "#d9d9d9",
+    "#bdbdbd",
+    "#969696",
+    "#737373",
+    "#525252",
+    "#252525",
+    "#000000"
+  ]
+};
 
 class VictorySunburst extends React.Component {
   static displayName = "VictorySunburst";
+
+  static role = "sunburst";
 
   static propTypes = {
     colorScale: PropTypes.oneOfType([
@@ -17,96 +38,116 @@ class VictorySunburst extends React.Component {
         "grayscale", "qualitative", "heatmap", "warm", "cool", "red", "green", "blue"
       ])
     ]),
+    containerComponent: PropTypes.element,
     data: PropTypes.object,
     displayCore: PropTypes.bool,
+    eventKey: PropTypes.oneOfType([
+      PropTypes.func,
+      CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
+      PropTypes.string
+    ]),
+    events: PropTypes.arrayOf(PropTypes.shape({
+      target: PropTypes.oneOf(["data", "parent"]),
+      eventKey: PropTypes.oneOfType([
+        PropTypes.func,
+        CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
+        PropTypes.string
+      ]),
+      eventHandlers: PropTypes.object
+    })),
+    groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
     minRadians: CustomPropTypes.nonNegative,
     onArcHover: PropTypes.func,
-    radius: PropTypes.func,
+    padding: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.shape({
+        top: PropTypes.number, bottom: PropTypes.number,
+        left: PropTypes.number, right: PropTypes.number
+      })
+    ]),
+    sharedEvents: PropTypes.shape({
+      events: PropTypes.array,
+      getEventState: PropTypes.func
+    }),
     sort: PropTypes.bool,
+    standalone: PropTypes.bool,
+    style: PropTypes.shape({
+      parent: PropTypes.object, data: PropTypes.object, labels: PropTypes.object
+    }),
+    theme: PropTypes.object,
     width: CustomPropTypes.nonNegative
   };
 
   static defaultProps = {
-    colorScale: d3Scale.schemeCategory20,
+    colorScale: "blue",
+    containerComponent: <VictoryContainer/>,
     data: flare,
     displayCore: false,
-    height: 700,
+    groupComponent: <g/>,
     minRadians: 0,
-    radius: (width, height) => Math.min(width, height) / 2,
     sort: true,
-    width: 700
+    standalone: true,
+    style: { data: { cursor: "pointer" } },
+    theme: VictoryTheme.grayscale
   };
 
-  drawSunburst() {
-    const {
-      colorScale,
-      data,
-      displayCore,
-      height,
-      minRadians,
-      onArcHover,
-      radius: getRadius,
-      sort,
-      width
-    } = this.props;
+  static getBaseProps = partialRight(
+    SunburstHelpers.getBaseProps.bind(SunburstHelpers),
+    fallbackProps
+  );
 
-    const radius = getRadius(width, height);
-    const color = d3Scale.scaleOrdinal(colorScale);
-    const partition = d3Hierarchy.partition();
+  static expectedComponents = [
+    "containerComponent", "groupComponent"
+  ];
 
-    const xScale = d3Scale.scaleLinear()
-      .range([0, Math.PI * 2]);
+  renderSunburstData(props) {
+    const { displayCore, onArcHover } = props;
+    const { arcs, colors, pathFunction, style } = SunburstHelpers.getCalculatedValues(props);
 
-    const yScale = d3Scale.scaleSqrt()
-      .range([0, radius]);
-
-    const arc = d3Shape.arc()
-      .startAngle((d) => xScale(d.x0))
-      .endAngle((d) => xScale(d.x1))
-      .innerRadius((d) => yScale(d.y0))
-      .outerRadius((d) => yScale(d.y1));
-
-    const root = d3Hierarchy.hierarchy(data, (d) => d.children)
-      .sum((d) => {
-        return d.children ? 0 : 1;
-      })
-      .sort(sort ? (a, b) => {
-        return b.value - a.value;
-      } : null);
-
-    const nodes = partition(root).descendants()
-      .filter((d) => {
-        return (d.x1 - d.x0) > minRadians;
-      });
-
-    const sunburstArcs = nodes.map((node, i) => (
+    const children = arcs.map((arc, i) => (
       <path
         key={`arc-${i}`}
-        d={arc(node)}
-        display={node.depth || displayCore ? null : "none"}
-        fill={color((node.children ? node : node.parent).data.name)}
-        onMouseOver={(ev) => onArcHover(node, ev)}
+        d={pathFunction(arc)}
+        display={arc.depth || displayCore ? null : "none"}
+        fill={colors((arc.children ? arc : arc.parent).data.name)}
+        onMouseOver={(ev) => onArcHover(arc, ev)}
         onMouseOut={() => onArcHover()}
-        style={{ cursor: "pointer" }}
+        style={style.data}
         stroke="white"
       />
     ));
 
-    return sunburstArcs;
+    return this.renderGroup(props, children);
+  }
+
+  // Overridden in victory-native
+  renderGroup(props, children) {
+    const offset = this.getOffset(props);
+    const transform = `translate(${offset.x}, ${offset.y})`;
+    const groupComponent = React.cloneElement(props.groupComponent, { transform });
+    return this.renderContainer(groupComponent, children);
+  }
+
+  getOffset(props) {
+    const { width, height } = props;
+    const calculatedProps = SunburstHelpers.getCalculatedValues(props);
+    const { padding, radius } = calculatedProps;
+    const offsetWidth = width / 2 + padding.left - padding.right;
+    const offsetHeight = height / 2 + padding.top - padding.bottom;
+    return {
+      x: offsetWidth + radius > width ? radius + padding.left - padding.right : offsetWidth,
+      y: offsetHeight + radius > height ? radius + padding.top - padding.bottom : offsetHeight
+    };
   }
 
   render() {
-    const { height, width } = this.props;
+    const { role } = this.constructor;
+    const props = Helpers.modifyProps(this.props, fallbackProps, role);
 
-    return (
-      <svg width={width} height={height}>
-        <g transform={`translate(${width / 2},${height / 2})`}>
-          {this.drawSunburst()}
-        </g>
-      </svg>
-    );
+    const children = this.renderSunburstData(props);
+    return props.standalone ? this.renderContainer(props.containerComponent, children) : children;
   }
 }
 
-export default VictorySunburst;
+export default addEvents(VictorySunburst);
