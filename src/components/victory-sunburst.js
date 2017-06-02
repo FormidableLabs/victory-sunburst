@@ -76,7 +76,6 @@ class VictorySunburst extends React.Component {
     groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
     minRadians: CustomPropTypes.nonNegative,
-    onArcHover: PropTypes.func,
     padding: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.shape({

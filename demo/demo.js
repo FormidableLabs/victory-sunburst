@@ -18,7 +18,7 @@ const svgStyles = {
   viewBox: `0 0 ${size} ${size}`,
   width: size
 };
-const tooltipStyles = {
+const rectStyles = {
   fill: "white",
   height: tooltipHeight,
   opacity: 0.7,
@@ -44,16 +44,29 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.state = {};
-    this.handleArcHover = this.handleArcHover.bind(this);
+    this.handleDataMouseOver = this.handleDataMouseOver.bind(this);
+    this.handleDataMouseOut = this.handleDataMouseOut.bind(this);
   }
 
-  handleArcHover(activeNode, ev) {
-    const newState = { activeNode };
-    if (ev) {
-      newState.tooltipX = ev.clientX;
-      newState.tooltipY = ev.clientY;
+  handleDataMouseOver(ev, { datum, index }) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const { activeNode } = this.state;
+    const newState = { tooltipX: ev.clientX, tooltipY: ev.clientY };
+
+    if (!activeNode || activeNode.index !== index) {
+      newState.activeNode = datum;
     }
+
     this.setState(newState);
+  }
+
+  handleDataMouseOut(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    this.setState({ activeNode: null });
   }
 
   render() {
@@ -64,13 +77,19 @@ export default class App extends React.Component {
       <svg {...svgStyles}>
         <VictorySunburst
           data={data}
-          onArcHover={this.handleArcHover}
           height={size}
           width={size}
+          events={[{
+            target: "data",
+            eventHandlers: {
+              onMouseOver: this.handleDataMouseOver,
+              onMouseOut: this.handleDataMouseOut
+            }
+          }]}
         />
         {activeNode ? (
           <g transform={translate}>
-            <rect {...tooltipStyles} />
+            <rect {...rectStyles} />
             <text {...textStyles}>
               <tspan dy={-lineHeight} fontWeight="bold" {...tspanStyles}>
                 {activeNode.data.name}

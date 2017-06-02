@@ -28,11 +28,11 @@ export default {
     }
 
     for (let index = 0, len = arcs.length; index < len; index++) {
-      const arc = arcs[index];
-      const eventKey = arc.eventKey || index;
+      const datum = arcs[index];
+      const eventKey = datum.eventKey || index;
       const dataProps = {
-        index, pathFunction, datum: arc,
-        style: this.getArcStyle(arc, index, calculatedValues)
+        index, pathFunction, datum,
+        style: this.getArcStyle(datum, index, calculatedValues)
       };
 
       childProps[eventKey] = { data: dataProps };
