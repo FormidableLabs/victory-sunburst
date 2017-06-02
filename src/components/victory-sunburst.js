@@ -26,12 +26,29 @@ const fallbackProps = {
   ]
 };
 
+const animationWhitelist = [
+  "data", "height", "padding", "colorScale", "style", "width"
+];
+
 class VictorySunburst extends React.Component {
   static displayName = "VictorySunburst";
 
   static role = "sunburst";
 
+  static defaultTransitions = {
+    onExit: {
+      duration: 500,
+      before: () => ({ _y: 0 })
+    },
+    onEnter: {
+      duration: 500,
+      before: () => ({ _y: 0 }),
+      after: (datum) => ({ y_: datum._y })
+    }
+  };
+
   static propTypes = {
+    animate: PropTypes.object,
     colorScale: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.string),
       PropTypes.oneOf([
@@ -141,9 +158,17 @@ class VictorySunburst extends React.Component {
     };
   }
 
+  shouldAnimate() {
+    return Boolean(this.props.animate);
+  }
+
   render() {
     const { role } = this.constructor;
     const props = Helpers.modifyProps(this.props, fallbackProps, role);
+
+    if (this.shouldAnimate()) {
+      return this.animateComponent(props, animationWhitelist);
+    }
 
     const children = this.renderSunburstData(props);
     return props.standalone ? this.renderContainer(props.containerComponent, children) : children;
