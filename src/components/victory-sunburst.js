@@ -3,9 +3,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Helpers, PropTypes as CustomPropTypes, VictoryContainer, VictoryTheme
+  addEvents, Data, Helpers, PropTypes as CustomPropTypes, VictoryContainer, VictoryTheme
 } from "victory-core";
 
+import Arc from "./arc";
 import SunburstHelpers from "./helper-methods";
 
 const fallbackProps = {
@@ -56,6 +57,7 @@ class VictorySunburst extends React.Component {
     ]),
     containerComponent: PropTypes.element,
     data: PropTypes.object,
+    dataComponent: PropTypes.element,
     displayCore: PropTypes.bool,
     eventKey: PropTypes.oneOfType([
       PropTypes.func,
@@ -145,32 +147,21 @@ class VictorySunburst extends React.Component {
     SunburstHelpers.getBaseProps.bind(SunburstHelpers),
     fallbackProps
   );
-
-  static expectedComponents = [
-    "containerComponent", "groupComponent"
-  ];
+  static getData = Data.getData.bind(Data);
+  static expectedComponents = ["containerComponent", "groupComponent"];
 
   renderSunburstData(props) {
-    const { displayCore, onArcHover } = props;
-    const { arcs, colors, pathFunction, style } = SunburstHelpers.getCalculatedValues(props);
+    const { dataComponent } = props;
+    const dataComponents = [];
 
-    const children = arcs.map((arc, i) => (
-      <path
-        key={`arc-${i}`}
-        d={pathFunction(arc)}
-        display={arc.depth || displayCore ? null : "none"}
-        fill={colors((arc.children ? arc : arc.parent).data.name)}
-        onMouseOver={(ev) => onArcHover(arc, ev)}
-        onMouseOut={() => onArcHover()}
-        style={style.data}
-        stroke="white"
-      />
-    ));
+    for (let index = 0, len = this.dataKeys.length; index < len; index++) {
+      const dataProps = this.getComponentProps(dataComponent, "data", index);
+      dataComponents[index] = React.cloneElement(dataComponent, dataProps);
+    }
 
-    return this.renderGroup(props, children);
+    return this.renderGroup(props, dataComponents);
   }
 
-  // Overridden in victory-native
   renderGroup(props, children) {
     const offset = this.getOffset(props);
     const transform = `translate(${offset.x}, ${offset.y})`;

@@ -8,7 +8,6 @@ export default class Arc extends React.Component {
 
   static propTypes = {
     active: PropTypes.bool,
-    arc: PropTypes.object,
     className: PropTypes.string,
     datum: PropTypes.object,
     events: PropTypes.object,
@@ -40,28 +39,24 @@ export default class Arc extends React.Component {
   }
 
   calculateAttributes(props) {
-    const { active, arc, datum, pathFunction, style } = props;
+    const { active, datum, pathFunction, style } = props;
     return {
       style: Helpers.evaluateStyle(style, datum, active),
-      path: pathFunction(arc)
+      path: pathFunction(datum)
     };
   }
 
-  renderArc(path, style) {
+  render() {
     const { className, events, role, shapeRendering } = this.props;
     return (
       <path
-        d={path}
+        d={this.path}
         className={className}
         role={role || "presentation"}
-        style={style}
+        style={this.style}
         shapeRendering={shapeRendering || "auto"}
         {...events}
       />
     );
-  }
-
-  render() {
-    return this.renderArc(this.path, this.style);
   }
 }

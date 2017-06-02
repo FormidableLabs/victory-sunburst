@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { defaults, omit } from "lodash";
+import { defaults } from "lodash";
 import * as d3Hierarchy from "d3-hierarchy";
 import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
@@ -9,8 +9,7 @@ export default {
   getArcStyle(datum, index, calculatedValues) {
     const { style, colors } = calculatedValues;
     const fill = this.getColor(style, colors, index);
-    const dataStyles = omit(datum, ["_x", "_y", "x", "y", "label"]);
-    return defaults({}, dataStyles, { fill }, style.data);
+    return defaults({}, datum.style, { fill }, style.data);
   },
 
   getBaseProps(props, fallbackProps) {
@@ -24,11 +23,15 @@ export default {
       }
     };
 
+    if (!props.displayCore) {
+      arcs[0].style = { ...arcs[0].style, display: "none" };
+    }
+
     for (let index = 0, len = arcs.length; index < len; index++) {
       const arc = arcs[index];
       const eventKey = arc.eventKey || index;
       const dataProps = {
-        index, pathFunction, arc, arcs,
+        index, pathFunction, datum: arc,
         style: this.getArcStyle(arc, index, calculatedValues)
       };
 
@@ -46,9 +49,7 @@ export default {
     const radius = this.getRadius(props, padding);
     const arcs = this.getArcs(props, data);
 
-    const colors = d3Scale.scaleOrdinal(
-      Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale)
-    );
+    const colors = Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale);
 
     const xScale = d3Scale.scaleLinear()
       .range([0, Math.PI * 2]);
@@ -81,8 +82,12 @@ export default {
 
   getArcs(props, data) {
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
-      .sum((d) => { return d.children ? 0 : 1; })
-      .sort(props.sort ? (a, b) => { return b.value - a.value; } : null);
+      .sum((d) => {
+        return d.children ? 0 : 1;
+      })
+      .sort(props.sort ? (a, b) => {
+        return b.value - a.value;
+      } : null);
 
     const partition = d3Hierarchy.partition();
 
