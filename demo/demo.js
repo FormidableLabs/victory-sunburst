@@ -95,7 +95,7 @@ export default class App extends React.Component {
                 {activeNode.data.name}
               </tspan>
               <tspan dy={0} {...tspanStyles}>
-                {`${(activeNode.data.size / data.size * 100).toFixed(2)}%`}
+                {`${(activeNode.data.size / activeNode.parent.data.size * 100).toFixed(2)}%`}
               </tspan>
               <tspan dy={lineHeight} {...tspanStyles}>
                 {filesize(activeNode.data.size)}

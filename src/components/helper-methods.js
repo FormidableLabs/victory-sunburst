@@ -15,11 +15,11 @@ export default {
   getBaseProps(props, fallbackProps) {
     props = Helpers.modifyProps(props, fallbackProps, "sunburst");
     const calculatedValues = this.getCalculatedValues(props);
-    const { arcs, style, pathFunction } = calculatedValues;
+    const { height, standalone, width } = props;
+    const { arcs, data, padding, pathFunction, radius, style } = calculatedValues;
     const childProps = {
       parent: {
-        standalone: props.standalone, arcs, pathFunction,
-        width: props.width, height: props.height, style: style.parent
+        arcs, data, height, padding, pathFunction, radius, standalone, style: style.parent, width
       }
     };
 
@@ -44,12 +44,12 @@ export default {
   getCalculatedValues(props) {
     const { colorScale, data, theme } = props;
     const styleObject = theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
+    const colors = Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale);
     const style = Helpers.getStyles(props.style, styleObject, "auto", "100%");
     const padding = Helpers.getPadding(props);
     const radius = this.getRadius(props, padding);
-    const arcs = this.getArcs(props, data);
-
-    const colors = Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale);
+    const arcs = this.getArcs(props);
+    this.sumNodes(data);
 
     const xScale = d3Scale.scaleLinear()
       .range([0, Math.PI * 2]);
@@ -63,7 +63,7 @@ export default {
       .innerRadius((d) => yScale(d.y0))
       .outerRadius((d) => yScale(d.y1));
 
-    return { arcs, colors, padding, pathFunction, style };
+    return { arcs, colors, data, padding, pathFunction, radius, style };
   },
 
   getColor(style, colors, index) {
@@ -80,20 +80,30 @@ export default {
     ) / 2;
   },
 
-  getArcs(props, data) {
+  getArcs({ data, minRadians, sort }) {
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
       .sum((d) => {
         return d.children ? 0 : 1;
       })
-      .sort(props.sort ? (a, b) => {
+      .sort(sort ? (a, b) => {
         return b.value - a.value;
       } : null);
 
     const partition = d3Hierarchy.partition();
 
     const nodes = partition(root).descendants()
-      .filter((d) => { return (d.x1 - d.x0) > props.minRadians; });
+      .filter((d) => { return (d.x1 - d.x0) > minRadians; });
 
     return nodes;
+  },
+
+  sumNodes(node) {
+    if (node.children && node.children.length > 0) {
+      node.size = 0;
+      for (let i = 0; i < node.children.length; i++) {
+        node.size += this.sumNodes(node.children[i]);
+      }
+    }
+    return node.size;
   }
 };

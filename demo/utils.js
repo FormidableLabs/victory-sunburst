@@ -38,16 +38,6 @@ const getFile = (module, fileName, parentTree) => {
   }
 };
 
-const sumNodes = (node) => {
-  if (node.children && node.children.length > 0) {
-    node.size = 0;
-    for (let i = 0; i < node.children.length; i++) {
-      node.size += sumNodes(node.children[i]);
-    }
-  }
-  return node.size;
-};
-
 export const buildHierarchy = (modules) => {
   const root = {
     name: "root",
@@ -78,8 +68,6 @@ export const buildHierarchy = (modules) => {
 
     getFile(mod, fileName, root);
   });
-
-  sumNodes(root);
 
   return root;
 };

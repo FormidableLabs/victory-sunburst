@@ -3,16 +3,16 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Data, Helpers, PropTypes as CustomPropTypes, VictoryContainer, VictoryTheme
+  addEvents, Helpers, PropTypes as CustomPropTypes, VictoryContainer, VictoryTheme
 } from "victory-core";
 
 import Arc from "./arc";
 import SunburstHelpers from "./helper-methods";
 
 const fallbackProps = {
-  height: 700,
+  height: 400,
   padding: 30,
-  width: 700,
+  width: 400,
   colorScale: [
     "#ffffff",
     "#f0f0f0",
@@ -113,19 +113,11 @@ class VictorySunburst extends React.Component {
     containerComponent: <VictoryContainer/>,
     data: {
       name: "A",
-      children: [{
-        name: "B1",
-        children: [
-          { name: "C1", size: 2 },
-          { name: "C2", size: 3 }
-        ]
-      }, {
-        name: "B2",
-        children: [
-          { name: "C3", size: 2 },
-          { name: "C4", size: 3 }
-        ]
-      }]
+      children: [
+        { name: "B1", size: 5 },
+        { name: "B2", size: 10 },
+        { name: "B3", size: 5 }
+      ]
     },
     dataComponent: <Arc/>,
     displayCore: false,
@@ -146,8 +138,9 @@ class VictorySunburst extends React.Component {
     SunburstHelpers.getBaseProps.bind(SunburstHelpers),
     fallbackProps
   );
-  static getData = Data.getData.bind(Data);
-  static expectedComponents = ["containerComponent", "groupComponent"];
+  static expectedComponents = [
+    "containerComponent", "groupComponent"
+  ];
 
   renderSunburstData(props) {
     const { dataComponent } = props;
@@ -169,9 +162,8 @@ class VictorySunburst extends React.Component {
   }
 
   getOffset(props) {
-    const { width, height } = props;
-    const calculatedProps = SunburstHelpers.getCalculatedValues(props);
-    const { padding, radius } = calculatedProps;
+    const { height, width } = props;
+    const { padding, radius } = this.baseProps.parent;
     const offsetWidth = width / 2 + padding.left - padding.right;
     const offsetHeight = height / 2 + padding.top - padding.bottom;
     return {
