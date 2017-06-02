@@ -7,7 +7,6 @@ import {
 } from "victory-core";
 
 import SunburstHelpers from "./helper-methods";
-import flare from "../../flare.js";
 
 const fallbackProps = {
   height: 700,
@@ -93,19 +92,52 @@ class VictorySunburst extends React.Component {
       parent: PropTypes.object, data: PropTypes.object, labels: PropTypes.object
     }),
     theme: PropTypes.object,
-    width: CustomPropTypes.nonNegative
+    width: CustomPropTypes.nonNegative,
+    x: PropTypes.oneOfType([
+      PropTypes.func,
+      CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string)
+    ]),
+    y: PropTypes.oneOfType([
+      PropTypes.func,
+      CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string)
+    ])
   };
 
   static defaultProps = {
-    colorScale: "blue",
+    colorScale: "green",
     containerComponent: <VictoryContainer/>,
-    data: flare,
+    data: {
+      name: "A",
+      children: [{
+        name: "B1",
+        children: [
+          { name: "C1", size: 2 },
+          { name: "C2", size: 3 }
+        ]
+      }, {
+        name: "B2",
+        children: [
+          { name: "C3", size: 2 },
+          { name: "C4", size: 3 }
+        ]
+      }]
+    },
+    dataComponent: <Arc/>,
     displayCore: false,
     groupComponent: <g/>,
     minRadians: 0,
     sort: true,
     standalone: true,
-    style: { data: { cursor: "pointer" } },
+    style: {
+      data: {
+        cursor: "pointer",
+        stroke: "white"
+      }
+    },
     theme: VictoryTheme.grayscale
   };
 
