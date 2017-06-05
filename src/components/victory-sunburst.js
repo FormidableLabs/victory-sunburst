@@ -109,6 +109,7 @@ class VictorySunburst extends React.Component {
   };
 
   static defaultProps = {
+    colorScale: "blue",
     containerComponent: <VictoryContainer/>,
     data: {
       name: "A",

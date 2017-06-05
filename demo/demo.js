@@ -71,6 +71,7 @@ export default class App extends React.Component {
       <svg {...svgStyles}>
         <VictorySunburst
           data={data}
+          sort={false}
           events={[{
             target: "data",
             eventHandlers: {

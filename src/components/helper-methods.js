@@ -6,9 +6,8 @@ import * as d3Scale from "d3-scale";
 import { Helpers, Style } from "victory-core";
 
 export default {
-  getArcStyle(datum, index, calculatedValues) {
-    const { style, colors } = calculatedValues;
-    const fill = this.getColor(style, colors, index);
+  getArcStyle(datum, { colors, style }) {
+    const fill = this.getColor(datum, colors, style);
     return defaults({}, datum.style, { fill }, style.data);
   },
 
@@ -32,7 +31,7 @@ export default {
       const eventKey = datum.eventKey || index;
       const dataProps = {
         index, pathFunction, datum,
-        style: this.getArcStyle(datum, index, calculatedValues)
+        style: this.getArcStyle(datum, calculatedValues)
       };
 
       childProps[eventKey] = { data: dataProps };
@@ -44,7 +43,9 @@ export default {
   getCalculatedValues(props) {
     const { colorScale, data, theme } = props;
     const styleObject = theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
-    const colors = Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale);
+    const colors = d3Scale.scaleOrdinal(
+      Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale)
+    );
     const style = Helpers.getStyles(props.style, styleObject, "auto", "100%");
     const padding = Helpers.getPadding(props);
     const radius = this.getRadius(props, padding);
@@ -66,11 +67,11 @@ export default {
     return { arcs, colors, data, padding, pathFunction, radius, style };
   },
 
-  getColor(style, colors, index) {
+  getColor(datum, colors, style) {
     if (style && style.data && style.data.fill) {
       return style.data.fill;
     }
-    return colors && colors[index % colors.length];
+    return colors && colors((datum.children ? datum.data : datum.parent.data).name);
   },
 
   getRadius(props, padding) {
