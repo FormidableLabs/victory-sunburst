@@ -81,10 +81,11 @@ export default {
     ) / 2;
   },
 
-  getArcs({ data, minRadians, sort }) {
+  getArcs({ data, minRadians, sort, sumBy }) {
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
       .sum((d) => {
-        return d.children ? 0 : d.size;
+        if (d.children) { return 0; }
+        return sumBy === "size" ? d.size : 1;
       })
       .sort(sort ? (a, b) => {
         return b.value - a.value;

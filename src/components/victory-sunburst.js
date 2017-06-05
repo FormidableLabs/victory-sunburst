@@ -92,6 +92,7 @@ class VictorySunburst extends React.Component {
     style: PropTypes.shape({
       parent: PropTypes.object, data: PropTypes.object, labels: PropTypes.object
     }),
+    sumBy: PropTypes.oneOf(["count", "size"]),
     theme: PropTypes.object,
     width: CustomPropTypes.nonNegative,
     x: PropTypes.oneOfType([
@@ -131,6 +132,7 @@ class VictorySunburst extends React.Component {
         stroke: "white"
       }
     },
+    sumBy: "size",
     theme: VictoryTheme.grayscale
   };
 
