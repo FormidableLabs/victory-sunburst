@@ -10,9 +10,6 @@ import Arc from "./arc";
 import SunburstHelpers from "./helper-methods";
 
 const fallbackProps = {
-  height: 400,
-  padding: 30,
-  width: 400,
   colorScale: [
     "#ffffff",
     "#f0f0f0",
@@ -23,7 +20,10 @@ const fallbackProps = {
     "#525252",
     "#252525",
     "#000000"
-  ]
+  ],
+  height: 400,
+  padding: 30,
+  width: 400
 };
 
 const animationWhitelist = [
@@ -109,7 +109,6 @@ class VictorySunburst extends React.Component {
   };
 
   static defaultProps = {
-    colorScale: "green",
     containerComponent: <VictoryContainer/>,
     data: {
       name: "A",
@@ -139,7 +138,7 @@ class VictorySunburst extends React.Component {
     fallbackProps
   );
   static expectedComponents = [
-    "containerComponent", "groupComponent"
+    "containerComponent", "dataComponent", "groupComponent"
   ];
 
   renderSunburstData(props) {

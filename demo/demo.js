@@ -2,14 +2,15 @@
 import React from "react";
 import filesize from "filesize";
 import { VictorySunburst } from "../src/index";
-import { buildHierarchy } from "./utils";
 import flare from "./flare.js";
 
+// import { buildHierarchy } from "./utils";
 // const data = buildHierarchy(stats.modules);
+
 const data = flare;
 const fontSize = 14;
 const lineHeight = fontSize * 1.4;
-const size = 800;
+const size = 700;
 const tooltipHeight = fontSize * 6;
 const tooltipOffset = 20;
 
@@ -49,37 +50,27 @@ export default class App extends React.Component {
     this.handleDataMouseOut = this.handleDataMouseOut.bind(this);
   }
 
-  handleDataMouseOver(ev, { datum, index }) {
-    ev.preventDefault();
-    ev.stopPropagation();
-
+  handleDataMouseOver({ clientX, clientY }, { datum }) {
     const { activeNode } = this.state;
-    const newState = { tooltipX: ev.clientX, tooltipY: ev.clientY };
-
-    if (!activeNode || activeNode.index !== index) {
+    const newState = { clientX, clientY };
+    if (!activeNode) {
       newState.activeNode = datum;
     }
-
     this.setState(newState);
   }
 
-  handleDataMouseOut(ev) {
-    ev.preventDefault();
-    ev.stopPropagation();
-
+  handleDataMouseOut() {
     this.setState({ activeNode: null });
   }
 
   render() {
-    const { activeNode, tooltipX, tooltipY } = this.state;
-    const translate = `translate(${tooltipX + tooltipOffset},${tooltipY + tooltipOffset})`;
+    const { activeNode, clientX, clientY } = this.state;
+    const translate = `translate(${clientX + tooltipOffset},${clientY + tooltipOffset})`;
 
     return (
       <svg {...svgStyles}>
         <VictorySunburst
           data={data}
-          height={size}
-          width={size}
           events={[{
             target: "data",
             eventHandlers: {
