@@ -1,3 +1,3 @@
-module.exports = {
-  VictorySunburst: require("./components/victory-sunburst")
-};
+import VictorySunburst from "./components/victory-sunburst";
+
+export { VictorySunburst };
