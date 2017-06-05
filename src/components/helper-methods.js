@@ -81,7 +81,8 @@ export default {
     ) / 2;
   },
 
-  getArcs({ data, minRadians, sort, sumBy }) {
+  getArcs({ data, minRadians, sortData, sumBy }) {
+    const compareFunction = this.getSort(sortData);
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
       .sum((d) => {
         if (d.children) {
@@ -89,9 +90,7 @@ export default {
         }
         return sumBy === "size" ? d.size : 1;
       })
-      .sort(sort ? (a, b) => {
-        return b.value - a.value;
-      } : null);
+      .sort(compareFunction);
 
     const partition = d3Hierarchy.partition();
     const nodes = partition(root).descendants()
@@ -100,6 +99,16 @@ export default {
       });
 
     return nodes;
+  },
+
+  getSort(sortData) {
+    let compareFunction = null;
+    if (sortData) {
+      compareFunction = sortData === true ? (a, b) => {
+        return b.value - a.value;
+      } : sortData;
+    }
+    return compareFunction;
   },
 
   sumNodes(node) {

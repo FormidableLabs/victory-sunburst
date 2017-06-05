@@ -87,7 +87,7 @@ class VictorySunburst extends React.Component {
       events: PropTypes.array,
       getEventState: PropTypes.func
     }),
-    sort: PropTypes.bool,
+    sortData: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     standalone: PropTypes.bool,
     style: PropTypes.shape({
       parent: PropTypes.object, data: PropTypes.object, labels: PropTypes.object
