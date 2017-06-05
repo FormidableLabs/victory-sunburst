@@ -83,7 +83,7 @@ export default {
   getArcs({ data, minRadians, sort }) {
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
       .sum((d) => {
-        return d.children ? 0 : 1;
+        return d.children ? 0 : d.size;
       })
       .sort(sort ? (a, b) => {
         return b.value - a.value;
@@ -92,7 +92,9 @@ export default {
     const partition = d3Hierarchy.partition();
 
     const nodes = partition(root).descendants()
-      .filter((d) => { return (d.x1 - d.x0) > minRadians; });
+      .filter((d) => {
+        return (d.x1 - d.x0) > minRadians;
+      });
 
     return nodes;
   },
