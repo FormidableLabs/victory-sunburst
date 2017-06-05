@@ -38,12 +38,12 @@ class VictorySunburst extends React.Component {
   static defaultTransitions = {
     onExit: {
       duration: 500,
-      before: () => ({ _y: 0 })
+      before: () => {}
     },
     onEnter: {
       duration: 500,
-      before: () => ({ _y: 0 }),
-      after: (datum) => ({ y_: datum._y })
+      before: () => {},
+      after: () => {}
     }
   };
 
@@ -123,8 +123,7 @@ class VictorySunburst extends React.Component {
     dataComponent: <Arc/>,
     displayCore: false,
     groupComponent: <g/>,
-    minRadians: 0,
-    sort: true,
+    minRadians: 0.001,
     standalone: true,
     style: {
       data: {

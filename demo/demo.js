@@ -7,12 +7,11 @@ import flare from "./flare.js";
 // import { buildHierarchy } from "./utils";
 // const data = buildHierarchy(stats.modules);
 
-const data = flare;
 const fontSize = 14;
 const lineHeight = fontSize * 1.4;
 const size = 700;
 const tooltipHeight = fontSize * 6;
-const tooltipOffset = 20;
+const tooltipOffset = 10;
 
 const svgStyles = {
   height: size,
@@ -23,7 +22,7 @@ const svgStyles = {
 const rectStyles = {
   fill: "white",
   height: tooltipHeight,
-  opacity: 0.7,
+  opacity: 0.8,
   rx: 4,
   ry: 4,
   stroke: "gray",
@@ -70,8 +69,7 @@ export default class App extends React.Component {
     return (
       <svg {...svgStyles}>
         <VictorySunburst
-          data={data}
-          sort={false}
+          data={flare}
           events={[{
             target: "data",
             eventHandlers: {
@@ -79,6 +77,8 @@ export default class App extends React.Component {
               onMouseOut: this.handleDataMouseOut
             }
           }]}
+          height={size}
+          width={size}
         />
         {activeNode ? (
           <g transform={translate}>

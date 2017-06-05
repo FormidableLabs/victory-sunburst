@@ -74,17 +74,19 @@ export default {
     return colors && colors((datum.children ? datum.data : datum.parent.data).name);
   },
 
-  getRadius(props, padding) {
+  getRadius({ width, height }, padding) {
     return Math.min(
-      props.width - padding.left - padding.right,
-      props.height - padding.top - padding.bottom
+      width - padding.left - padding.right,
+      height - padding.top - padding.bottom
     ) / 2;
   },
 
   getArcs({ data, minRadians, sort, sumBy }) {
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
       .sum((d) => {
-        if (d.children) { return 0; }
+        if (d.children) {
+          return 0;
+        }
         return sumBy === "size" ? d.size : 1;
       })
       .sort(sort ? (a, b) => {
@@ -92,7 +94,6 @@ export default {
       } : null);
 
     const partition = d3Hierarchy.partition();
-
     const nodes = partition(root).descendants()
       .filter((d) => {
         return (d.x1 - d.x0) > minRadians;

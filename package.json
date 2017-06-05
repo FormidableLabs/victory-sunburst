@@ -43,7 +43,6 @@
     "chai": "^3.5.0",
     "chai-enzyme": "0.4.1",
     "enzyme": "2.8.0",
-    "json-loader": "^0.5.4",
     "mocha": "^3.0.2",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
