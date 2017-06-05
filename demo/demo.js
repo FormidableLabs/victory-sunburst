@@ -3,9 +3,10 @@ import React from "react";
 import filesize from "filesize";
 import { VictorySunburst } from "../src/index";
 import { buildHierarchy } from "./utils";
-import stats from "json!./stats.json"; // eslint-disable-line import/no-unresolved
+import flare from "./flare.js";
 
-const data = buildHierarchy(stats.modules);
+// const data = buildHierarchy(stats.modules);
+const data = flare;
 const fontSize = 14;
 const lineHeight = fontSize * 1.4;
 const size = 800;
