@@ -30,7 +30,7 @@ export default {
       const datum = arcs[index];
       const eventKey = datum.eventKey || index;
       const dataProps = {
-        index, pathFunction, datum,
+        index, pathFunction, datum, slice: datum,
         style: this.getArcStyle(datum, calculatedValues)
       };
 

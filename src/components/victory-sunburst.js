@@ -3,10 +3,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Helpers, PropTypes as CustomPropTypes, VictoryContainer, VictoryTheme
+  addEvents, Helpers, PropTypes as CustomPropTypes, Slice, VictoryContainer, VictoryTheme
 } from "victory-core";
 
-import Arc from "./arc";
 import SunburstHelpers from "./helper-methods";
 
 const fallbackProps = {
@@ -120,7 +119,7 @@ class VictorySunburst extends React.Component {
         { name: "B3", size: 5 }
       ]
     },
-    dataComponent: <Arc/>,
+    dataComponent: <Slice/>,
     displayCore: false,
     groupComponent: <g/>,
     minRadians: 0.001,
