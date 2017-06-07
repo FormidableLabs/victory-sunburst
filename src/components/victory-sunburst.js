@@ -57,7 +57,7 @@ class VictorySunburst extends React.Component {
     containerComponent: PropTypes.element,
     data: PropTypes.object,
     dataComponent: PropTypes.element,
-    displayCore: PropTypes.bool,
+    displayRoot: PropTypes.bool,
     eventKey: PropTypes.oneOfType([
       PropTypes.func,
       CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
@@ -120,7 +120,7 @@ class VictorySunburst extends React.Component {
       ]
     },
     dataComponent: <Slice/>,
-    displayCore: false,
+    displayRoot: false,
     groupComponent: <g/>,
     minRadians: 0.001,
     standalone: true,

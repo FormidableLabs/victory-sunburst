@@ -14,7 +14,7 @@ export default {
   getBaseProps(props, fallbackProps) {
     props = Helpers.modifyProps(props, fallbackProps, "sunburst");
     const calculatedValues = this.getCalculatedValues(props);
-    const { height, standalone, width } = props;
+    const { displayRoot, height, standalone, width } = props;
     const { arcs, data, padding, pathFunction, radius, style } = calculatedValues;
     const childProps = {
       parent: {
@@ -22,7 +22,7 @@ export default {
       }
     };
 
-    if (!props.displayCore) {
+    if (!displayRoot) {
       arcs[0].style = { ...arcs[0].style, display: "none" };
     }
 

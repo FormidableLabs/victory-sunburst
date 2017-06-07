@@ -72,9 +72,9 @@ Note that only leaves have `size`.
 
 *Default value:* `700`
 
-####**displayCore**
+####**displayRoot**
 
-*A boolean* for toggling the display of the sunburst core node.
+*A boolean* for toggling the display of the sunburst root node.
 
 *Default value:* `false`
 
