@@ -6,7 +6,7 @@ import * as d3Scale from "d3-scale";
 import { Helpers, Style } from "victory-core";
 
 export default {
-  getArcStyle(datum, { colors, style }) {
+  getSliceStyle(datum, { colors, style }) {
     const fill = this.getColor(datum, colors, style);
     return defaults({}, datum.style, { fill }, style.data);
   },
@@ -15,23 +15,23 @@ export default {
     props = Helpers.modifyProps(props, fallbackProps, "sunburst");
     const calculatedValues = this.getCalculatedValues(props);
     const { displayRoot, height, standalone, width } = props;
-    const { arcs, data, padding, pathFunction, radius, style } = calculatedValues;
+    const { data, padding, pathFunction, radius, slices, style } = calculatedValues;
     const childProps = {
       parent: {
-        arcs, data, height, padding, pathFunction, radius, standalone, style: style.parent, width
+        data, height, padding, pathFunction, radius, slices, standalone, style: style.parent, width
       }
     };
 
     if (!displayRoot) {
-      arcs[0].style = { ...arcs[0].style, display: "none" };
+      slices[0].style = { ...slices[0].style, display: "none" };
     }
 
-    for (let index = 0, len = arcs.length; index < len; index++) {
-      const datum = arcs[index];
+    for (let index = 0, len = slices.length; index < len; index++) {
+      const datum = slices[index];
       const eventKey = datum.eventKey || index;
       const dataProps = {
         index, pathFunction, datum, slice: datum,
-        style: this.getArcStyle(datum, calculatedValues)
+        style: this.getSliceStyle(datum, calculatedValues)
       };
 
       childProps[eventKey] = { data: dataProps };
@@ -43,13 +43,14 @@ export default {
   getCalculatedValues(props) {
     const { colorScale, data, theme } = props;
     const styleObject = theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
-    const colors = d3Scale.scaleOrdinal(
-      Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale)
-    );
     const style = Helpers.getStyles(props.style, styleObject, "auto", "100%");
     const padding = Helpers.getPadding(props);
     const radius = this.getRadius(props, padding);
-    const arcs = this.getArcs(props);
+    const slices = this.getSlices(props);
+    const colors = d3Scale.scaleOrdinal(
+      Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale)
+    );
+
     this.sumNodes(data);
 
     const xScale = d3Scale.scaleLinear()
@@ -64,7 +65,7 @@ export default {
       .innerRadius((d) => yScale(d.y0))
       .outerRadius((d) => yScale(d.y1));
 
-    return { arcs, colors, data, padding, pathFunction, radius, style };
+    return { colors, data, padding, pathFunction, radius, slices, style };
   },
 
   getColor(datum, colors, style) {
@@ -81,13 +82,11 @@ export default {
     ) / 2;
   },
 
-  getArcs({ data, minRadians, sortData, sumBy }) {
+  getSlices({ data, minRadians, sortData, sumBy }) {
     const compareFunction = this.getSort(sortData);
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
       .sum((d) => {
-        if (d.children) {
-          return 0;
-        }
+        if (d.children) { return 0; }
         return sumBy === "size" ? d.size : 1;
       })
       .sort(compareFunction);

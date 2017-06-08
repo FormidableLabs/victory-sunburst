@@ -89,7 +89,7 @@ class VictorySunburst extends React.Component {
     sortData: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     standalone: PropTypes.bool,
     style: PropTypes.shape({
-      parent: PropTypes.object, data: PropTypes.object, labels: PropTypes.object
+      parent: PropTypes.object, data: PropTypes.object
     }),
     sumBy: PropTypes.oneOf(["count", "size"]),
     theme: PropTypes.object,
