@@ -3,7 +3,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Helpers, PropTypes as CustomPropTypes, Slice, VictoryContainer, VictoryTheme
+  addEvents, Helpers, PropTypes as CustomPropTypes, Slice,
+  VictoryContainer, VictoryTheme, VictoryTooltip
 } from "victory-core";
 
 import SunburstHelpers from "./helper-methods";
@@ -47,6 +48,7 @@ class VictorySunburst extends React.Component {
   };
 
   static propTypes = {
+    activeNodeIndex: CustomPropTypes.nonNegative,
     animate: PropTypes.object,
     colorScale: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.string),
@@ -64,7 +66,7 @@ class VictorySunburst extends React.Component {
       PropTypes.string
     ]),
     events: PropTypes.arrayOf(PropTypes.shape({
-      target: PropTypes.oneOf(["data", "parent"]),
+      target: PropTypes.oneOf(["data", "parent", "labels"]),
       eventKey: PropTypes.oneOfType([
         PropTypes.func,
         CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
@@ -74,6 +76,7 @@ class VictorySunburst extends React.Component {
     })),
     groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
+    labelComponent: PropTypes.element,
     minRadians: CustomPropTypes.nonNegative,
     name: PropTypes.string,
     padding: PropTypes.oneOfType([
@@ -131,6 +134,7 @@ class VictorySunburst extends React.Component {
     dataComponent: <Slice/>,
     displayRoot: false,
     groupComponent: <g/>,
+    labelComponent: <VictoryTooltip/>,
     minRadians: 0.001,
     sortData: false,
     standalone: true,
@@ -155,7 +159,8 @@ class VictorySunburst extends React.Component {
   ];
 
   renderSunburstData(props) {
-    const { dataComponent } = props;
+    const { activeNodeIndex, dataComponent, height, labelComponent, width } = props;
+    let labelProps = { key: "tooltip", x: width / 2, y: height / 2 };
     const dataComponents = [];
 
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
@@ -163,7 +168,16 @@ class VictorySunburst extends React.Component {
       dataComponents[index] = React.cloneElement(dataComponent, dataProps);
     }
 
-    return this.renderGroup(props, dataComponents);
+    if (activeNodeIndex) {
+      const { data } = dataComponents[activeNodeIndex].props.datum;
+      const activeLabelProps = { active: true, text: `${data.name}: ${data.size}` };
+      labelProps = { ...labelProps, ...activeLabelProps };
+    }
+
+    const tooltipComponent = React.cloneElement(labelComponent, labelProps);
+    const children = [...dataComponents, tooltipComponent];
+
+    return this.renderGroup(props, children);
   }
 
   renderGroup(props, children) {

@@ -143,6 +143,14 @@ The `groupComponent` prop takes a component instance which will be used to creat
 
 *default:* `groupComponent={<g/>}`
 
+### labelComponent
+
+The `labelComponent` prop takes a component instance which will be used to render labels for each slice. The new element created from the passed `labelComponent` will be supplied with the following props: `x`, `y`, `index`, `datum`, `verticalAnchor`, `textAnchor`, `angle`, `style`, `text`, and `events`. Any of these props may be overridden by passing in props to the supplied component, or modified or ignored within the custom component itself. If `labelComponent` is omitted, a new [VictoryTooltip] will be created with the props described above.
+
+*examples:* `labelComponent={<VictoryTooltip dy={20}/>}`, `labelComponent={<MyCustomTooltip/>}`
+
+*default:* `<VictoryTooltip/>`
+
 #### name
 
 The `name` prop is used to reference a component instance when defining shared events.
@@ -167,7 +175,7 @@ The `sharedEvents` prop is used to coordinate events between Victory components 
 
 *A boolean or function* to indicate how data should be sorted. For basic sorting, `sortData={true}` defaults to use a compare function of `(a, b) => { return b.value - a.value; }`. A custom compare function can be supplied as well.
 
-*examples:* `sortData={true}`, `sortData={(a, b) => { return b.value - a.value; }}`
+*examples:* `sortData={true}`, `sortData={(a, b) => { return a.value - b.value; }}`
 
 *default:* `sortData={false}`
 
@@ -252,6 +260,7 @@ This project is in a pre-release state. We're hard at work fixing bugs and impro
 
 [React]: https://facebook.github.io/react/
 [prop-types]: https://github.com/reactjs/prop-types
+[VictoryTooltip]: https://formidable.com/open-source/victory/docs/victory-toolip
 [Slice component]: https://formidable.com/open-source/victory/docs/victory-primitives#slice
 [Sunburst image]: https://user-images.githubusercontent.com/2624467/27193597-42ff5dbc-51b4-11e7-8fba-647b067fc9d7.png
 [grayscale theme]: https://github.com/FormidableLabs/victory-core/blob/master/src/victory-theme/grayscale.js

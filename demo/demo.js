@@ -9,7 +9,7 @@ import flare from "./flare.js";
 
 const fontSize = 14;
 const lineHeight = fontSize * 1.4;
-const size = 700;
+const size = 400;
 const tooltipHeight = fontSize * 6;
 const tooltipOffset = 10;
 
@@ -49,27 +49,27 @@ export default class App extends React.Component {
     this.handleDataMouseOut = this.handleDataMouseOut.bind(this);
   }
 
-  handleDataMouseOver({ clientX, clientY }, { datum }) {
-    const { activeNode } = this.state;
+  handleDataMouseOver({ clientX, clientY }, { index }) {
+    const { activeNodeIndex } = this.state;
     const newState = { clientX, clientY };
-    if (!activeNode) {
-      newState.activeNode = datum;
+    if (!activeNodeIndex) {
+      newState.activeNodeIndex = index;
     }
     this.setState(newState);
   }
 
   handleDataMouseOut() {
-    this.setState({ activeNode: null });
+    this.setState({ activeNodeIndex: null });
   }
 
   render() {
-    const { activeNode, clientX, clientY } = this.state;
+    const { activeNodeIndex, clientX, clientY } = this.state;
     const translate = `translate(${clientX + tooltipOffset},${clientY + tooltipOffset})`;
 
     return (
       <svg {...svgStyles}>
         <VictorySunburst
-          data={flare}
+          activeNodeIndex={activeNodeIndex}
           events={[{
             target: "data",
             eventHandlers: {
@@ -80,23 +80,24 @@ export default class App extends React.Component {
           height={size}
           width={size}
         />
-        {activeNode ? (
-          <g transform={translate}>
-            <rect {...rectStyles} />
-            <text {...textStyles}>
-              <tspan dy={-lineHeight} fontWeight="bold" {...tspanStyles}>
-                {activeNode.data.name}
-              </tspan>
-              <tspan dy={0} {...tspanStyles}>
-                {`${(activeNode.data.size / activeNode.parent.data.size * 100).toFixed(2)}%`}
-              </tspan>
-              <tspan dy={lineHeight} {...tspanStyles}>
-                {filesize(activeNode.data.size)}
-              </tspan>
-            </text>
-          </g>
-        ) : null}
       </svg>
     );
   }
 }
+
+// {activeNode ? (
+//   <g transform={translate}>
+//     <rect {...rectStyles} />
+//     <text {...textStyles}>
+//       <tspan dy={-lineHeight} fontWeight="bold" {...tspanStyles}>
+//         {activeNode.data.name}
+//       </tspan>
+//       <tspan dy={0} {...tspanStyles}>
+//         {`${(activeNode.data.size / activeNode.parent.data.size * 100).toFixed(2)}%`}
+//       </tspan>
+//       <tspan dy={lineHeight} {...tspanStyles}>
+//         {filesize(activeNode.data.size)}
+//       </tspan>
+//     </text>
+//   </g>
+// ) : null}
