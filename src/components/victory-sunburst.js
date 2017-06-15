@@ -75,6 +75,7 @@ class VictorySunburst extends React.Component {
     groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
     minRadians: CustomPropTypes.nonNegative,
+    name: PropTypes.string,
     padding: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.shape({
@@ -89,23 +90,13 @@ class VictorySunburst extends React.Component {
     sortData: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
     standalone: PropTypes.bool,
     style: PropTypes.shape({
-      parent: PropTypes.object, data: PropTypes.object
+      parent: PropTypes.object, data: PropTypes.object, labels: PropTypes.object
     }),
     sumBy: PropTypes.oneOf(["count", "size"]),
     theme: PropTypes.object,
     width: CustomPropTypes.nonNegative,
-    x: PropTypes.oneOfType([
-      PropTypes.func,
-      CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.string)
-    ]),
-    y: PropTypes.oneOfType([
-      PropTypes.func,
-      CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.string)
-    ])
+    x: PropTypes.number,
+    y: PropTypes.number
   };
 
   static defaultProps = {
@@ -115,14 +106,33 @@ class VictorySunburst extends React.Component {
       name: "A",
       children: [
         { name: "B1", size: 5 },
-        { name: "B2", size: 10 },
-        { name: "B3", size: 5 }
+        {
+          name: "B2",
+          children: [
+            { name: "B2A", size: 4 },
+            {
+              name: "B2B",
+              children: [
+                { name: "B2B1", size: 4 },
+                { name: "B2B2", size: 4 }
+              ]
+            }
+          ]
+        },
+        {
+          name: "B3",
+          children: [
+            { name: "B3A", size: 3 },
+            { name: "B3B", size: 5 }
+          ]
+        }
       ]
     },
     dataComponent: <Slice/>,
     displayRoot: false,
     groupComponent: <g/>,
     minRadians: 0.001,
+    sortData: false,
     standalone: true,
     style: {
       data: {
@@ -131,7 +141,9 @@ class VictorySunburst extends React.Component {
       }
     },
     sumBy: "size",
-    theme: VictoryTheme.grayscale
+    theme: VictoryTheme.grayscale,
+    x: 0,
+    y: 0
   };
 
   static getBaseProps = partialRight(
