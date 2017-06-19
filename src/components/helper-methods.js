@@ -41,9 +41,11 @@ export default {
   },
 
   getCalculatedValues(props) {
-    const { colorScale, data, theme } = props;
-    const styleObject = theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
-    const style = Helpers.getStyles(props.style, styleObject, "auto", "100%");
+    const { colorScale, data, height, theme, width } = props;
+    const defaultStyles =
+      theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
+    const componentStyles = defaults({}, props.style, { parent: { height, width } });
+    const style = Helpers.getStyles(componentStyles, defaultStyles);
     const padding = Helpers.getPadding(props);
     const radius = this.getRadius(props, padding);
     const slices = this.getSlices(props);
