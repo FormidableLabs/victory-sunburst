@@ -8,7 +8,7 @@ import {
 } from "victory-core";
 
 import SunburstHelpers from "./helper-methods";
-
+const size = 400;
 const fallbackProps = {
   colorScale: [
     "#ffffff",
@@ -21,9 +21,23 @@ const fallbackProps = {
     "#252525",
     "#000000"
   ],
-  height: 400,
+  height: size,
   padding: 30,
-  width: 400
+  width: size
+};
+const position = (size + padding * 2) / 2;
+const tooltipProps = {
+  height: 50,
+  flyoutStyle: {
+    fill: "white",
+    padding: 10,
+    stroke: "lightgray",
+    strokeWidth: 0.5
+  },
+  pointerLength: 0,
+  width: 100,
+  x: position,
+  y: position
 };
 
 const animationWhitelist = [
@@ -134,7 +148,7 @@ class VictorySunburst extends React.Component {
     dataComponent: <Slice/>,
     displayRoot: false,
     groupComponent: <g/>,
-    labelComponent: <VictoryTooltip/>,
+    labelComponent: <VictoryTooltip {...tooltipProps}/>,
     minRadians: 0.001,
     sortData: false,
     standalone: true,
@@ -159,8 +173,8 @@ class VictorySunburst extends React.Component {
   ];
 
   renderSunburstData(props) {
-    const { activeNodeIndex, dataComponent, height, labelComponent, width } = props;
-    let labelProps = { key: "tooltip", x: width / 2, y: height / 2 };
+    const { activeNodeIndex, dataComponent, labelComponent } = props;
+    let labelProps = { key: "tooltip" };
     const dataComponents = [];
 
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
@@ -169,9 +183,8 @@ class VictorySunburst extends React.Component {
     }
 
     if (activeNodeIndex) {
-      const { data } = dataComponents[activeNodeIndex].props.datum;
-      const activeLabelProps = { active: true, text: `${data.name}: ${data.size}` };
-      labelProps = { ...labelProps, ...activeLabelProps };
+      const { data } = dataComponents[activeNodeIndex || 0].props.datum;
+      labelProps = { ...labelProps, active: true, text: `${data.name}: ${data.size}` };
     }
 
     const tooltipComponent = React.cloneElement(labelComponent, labelProps);
