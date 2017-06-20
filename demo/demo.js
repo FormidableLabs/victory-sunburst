@@ -27,6 +27,7 @@ export default class App extends React.Component {
   render() {
     return (
       <VictorySunburst
+        alwaysDisplayLabel
         activeNodeIndex={this.state.activeNodeIndex}
         events={[{
           target: "data",

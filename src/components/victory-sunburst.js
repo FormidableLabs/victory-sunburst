@@ -63,6 +63,7 @@ class VictorySunburst extends React.Component {
 
   static propTypes = {
     activeNodeIndex: CustomPropTypes.nonNegative,
+    alwaysDisplayLabel: PropTypes.bool,
     animate: PropTypes.object,
     colorScale: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.string),
@@ -173,8 +174,8 @@ class VictorySunburst extends React.Component {
   ];
 
   renderSunburstData(props) {
-    const { activeNodeIndex, dataComponent, labelComponent } = props;
-    let labelProps = { key: "tooltip" };
+    const { activeNodeIndex, alwaysDisplayLabel, dataComponent, labelComponent } = props;
+    let labelProps = { key: "label" };
     const dataComponents = [];
 
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
@@ -182,7 +183,7 @@ class VictorySunburst extends React.Component {
       dataComponents[index] = React.cloneElement(dataComponent, dataProps);
     }
 
-    if (activeNodeIndex) {
+    if (activeNodeIndex || alwaysDisplayLabel) {
       const { data } = dataComponents[activeNodeIndex || 0].props.datum;
       labelProps = { ...labelProps, active: true, text: `${data.name}: ${data.size}` };
     }
