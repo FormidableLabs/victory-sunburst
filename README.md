@@ -67,25 +67,25 @@ The `containerComponent` prop takes a component instance which will be used to c
   data={{
     name: "A",
     children: [
-      { name: "B1", size: 5 },
+      { name: "A1", size: 5 },
       {
-        name: "B2",
+        name: "A2",
         children: [
-          { name: "B2A", size: 4 },
+          { name: "A2a", size: 4 },
           {
-            name: "B2B",
+            name: "A2b",
             children: [
-              { name: "B2B1", size: 4 },
-              { name: "B2B2", size: 4 }
+              { name: "A2b1", size: 4 },
+              { name: "A2b2", size: 4 }
             ]
           }
         ]
       },
       {
-        name: "B3",
+        name: "A3",
         children: [
-          { name: "B3A", size: 3 },
-          { name: "B3B", size: 5 }
+          { name: "A3a", size: 3 },
+          { name: "A3b", size: 5 }
         ]
       }
     ]
