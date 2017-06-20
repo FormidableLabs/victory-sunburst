@@ -25,19 +25,18 @@ const fallbackProps = {
   padding: 30,
   width: size
 };
-const position = (size + padding * 2) / 2;
+const sunburstCenter = size / 2;
 const tooltipProps = {
   height: 50,
   flyoutStyle: {
     fill: "white",
-    padding: 10,
     stroke: "lightgray",
     strokeWidth: 0.5
   },
   pointerLength: 0,
   width: 100,
-  x: position,
-  y: position
+  x: sunburstCenter,
+  y: sunburstCenter + 25
 };
 
 const animationWhitelist = [

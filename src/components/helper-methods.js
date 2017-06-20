@@ -105,9 +105,9 @@ export default {
   getSort(sortData) {
     let compareFunction = null;
     if (sortData) {
-      compareFunction = sortData === true ? (a, b) => {
-        return b.value - a.value;
-      } : sortData;
+      compareFunction = sortData === true
+        ? (a, b) => { return b.value - a.value; }
+        : sortData;
     }
     return compareFunction;
   },
