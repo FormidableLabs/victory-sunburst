@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Helpers, PropTypes as CustomPropTypes, Slice,
+  addEvents, Helpers, PropTypes as CustomPropTypes, Slice, TextSize,
   VictoryContainer, VictoryTheme, VictoryTooltip
 } from "victory-core";
 
@@ -175,11 +175,9 @@ class VictorySunburst extends React.Component {
     if (activeNodeIndex || alwaysDisplayLabel) {
       const totalSize = dataComponents[0].props.datum.data.size;
       const { name, size: dataSize } = dataComponents[activeNodeIndex || 0].props.datum.data;
-      labelProps = {
-        ...labelProps,
-        active: true,
-        text: `${name}: ${dataSize} (${Math.round(dataSize / totalSize * 100)}%)`
-      };
+      const text = `${name}: ${dataSize} (${Math.round(dataSize / totalSize * 100)}%)`;
+      const { width } = TextSize.approximateTextSize(text, 14);
+      labelProps = { ...labelProps, active: true, text, width };
     }
 
     const tooltipComponent = React.cloneElement(labelComponent, labelProps);

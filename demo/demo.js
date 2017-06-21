@@ -35,7 +35,6 @@ export default class App extends React.Component {
     return (
       <div>
         <VictorySunburst
-          name="fixedTooltip"
           alwaysDisplayLabel
           activeNodeIndex={activeName === "fixedTooltip" ? activeNodeIndex : 0}
           events={[{
@@ -46,10 +45,10 @@ export default class App extends React.Component {
             }
           }]}
           height={size}
+          name="fixedTooltip"
           width={size}
         />
         <VictorySunburst
-          name="movingTooltip"
           activeNodeIndex={activeName === "movingTooltip" ? activeNodeIndex : 0}
           colorScale="red"
           events={[{
@@ -64,6 +63,7 @@ export default class App extends React.Component {
             y: clientY
           }}
           height={size}
+          name="movingTooltip"
           width={size}
         />
       </div>
