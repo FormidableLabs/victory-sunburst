@@ -22,7 +22,6 @@ const fallbackProps = {
     "#000000"
   ],
   height: size,
-  padding: 30,
   width: size
 };
 const sunburstCenter = size / 2;
@@ -80,7 +79,7 @@ class VictorySunburst extends React.Component {
       PropTypes.string
     ]),
     events: PropTypes.arrayOf(PropTypes.shape({
-      target: PropTypes.oneOf(["data", "parent", "labels"]),
+      target: PropTypes.oneOf(["data", "labels", "parent"]),
       eventKey: PropTypes.oneOfType([
         PropTypes.func,
         CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
@@ -91,6 +90,7 @@ class VictorySunburst extends React.Component {
     groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
     labelComponent: PropTypes.element,
+    labelProps: PropTypes.object,
     minRadians: CustomPropTypes.nonNegative,
     name: PropTypes.string,
     padding: PropTypes.oneOfType([
@@ -174,7 +174,7 @@ class VictorySunburst extends React.Component {
 
   renderSunburstData(props) {
     const { activeNodeIndex, alwaysDisplayLabel, dataComponent, labelComponent } = props;
-    let labelProps = { key: "label" };
+    let labelProps = { key: "label", ...props.labelProps };
     const dataComponents = [];
 
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
@@ -183,8 +183,13 @@ class VictorySunburst extends React.Component {
     }
 
     if (activeNodeIndex || alwaysDisplayLabel) {
-      const { data } = dataComponents[activeNodeIndex || 0].props.datum;
-      labelProps = { ...labelProps, active: true, text: `${data.name}: ${data.size}` };
+      const totalSize = dataComponents[0].props.datum.data.size;
+      const { name, size: dataSize } = dataComponents[activeNodeIndex || 0].props.datum.data;
+      labelProps = {
+        ...labelProps,
+        active: true,
+        text: `${name}: ${dataSize} (${Math.round(dataSize / totalSize * 100)}%)`
+      };
     }
 
     const tooltipComponent = React.cloneElement(labelComponent, labelProps);
