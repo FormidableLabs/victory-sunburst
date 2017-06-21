@@ -8,7 +8,7 @@ import {
 } from "victory-core";
 
 import SunburstHelpers from "./helper-methods";
-const size = 400;
+
 const fallbackProps = {
   colorScale: [
     "#ffffff",
@@ -21,21 +21,8 @@ const fallbackProps = {
     "#252525",
     "#000000"
   ],
-  height: size,
-  width: size
-};
-const sunburstCenter = size / 2;
-const tooltipProps = {
-  height: 50,
-  flyoutStyle: {
-    fill: "white",
-    stroke: "lightgray",
-    strokeWidth: 0.5
-  },
-  pointerLength: 0,
-  width: 100,
-  x: sunburstCenter,
-  y: sunburstCenter + 25
+  height: 400,
+  width: 400
 };
 
 const animationWhitelist = [
@@ -148,7 +135,7 @@ class VictorySunburst extends React.Component {
     dataComponent: <Slice/>,
     displayRoot: false,
     groupComponent: <g/>,
-    labelComponent: <VictoryTooltip {...tooltipProps}/>,
+    labelComponent: <VictoryTooltip/>,
     minRadians: 0.001,
     sortData: false,
     standalone: true,
@@ -174,8 +161,11 @@ class VictorySunburst extends React.Component {
 
   renderSunburstData(props) {
     const { activeNodeIndex, alwaysDisplayLabel, dataComponent, labelComponent } = props;
-    let labelProps = { key: "label", ...props.labelProps };
     const dataComponents = [];
+    let labelProps = {
+      key: "label",
+      ...SunburstHelpers.getLabelProps(props)
+    };
 
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
       const dataProps = this.getComponentProps(dataComponent, "data", index);

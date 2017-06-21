@@ -112,6 +112,23 @@ export default {
     return compareFunction;
   },
 
+  getLabelProps({ height, labelProps, width }) {
+    const labelHeight = 50;
+    return {
+      height: labelHeight,
+      flyoutStyle: {
+        fill: "white",
+        stroke: "lightgray",
+        strokeWidth: 0.5
+      },
+      pointerLength: 0,
+      width: 100,
+      x: width / 2,
+      y: height / 2 + labelHeight / 2,
+      ...labelProps
+    };
+  },
+
   sumNodes(node) {
     if (node.children && node.children.length > 0) {
       node.size = 0;

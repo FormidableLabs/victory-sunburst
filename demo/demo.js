@@ -3,6 +3,8 @@ import React from "react";
 import { VictorySunburst } from "../src/index";
 // import flare from "./flare.js";
 
+const size = 500;
+
 export default class App extends React.Component {
   constructor() {
     super();
@@ -43,6 +45,8 @@ export default class App extends React.Component {
               onMouseOut: this.handleDataMouseOut
             }
           }]}
+          height={size}
+          width={size}
         />
         <VictorySunburst
           name="movingTooltip"
@@ -56,11 +60,11 @@ export default class App extends React.Component {
             }
           }]}
           labelProps={{
-            x: clientX - 400,
-            y: clientY,
-            dx: 10,
-            dy: 10
+            x: clientX - size,
+            y: clientY
           }}
+          height={size}
+          width={size}
         />
       </div>
     );
