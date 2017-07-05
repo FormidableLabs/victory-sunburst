@@ -58,24 +58,18 @@ export default {
     const style = Helpers.getStyles(componentStyles, themeStyles);
     const padding = Helpers.getPadding(props);
     const radius = this.getRadius(props, padding);
-    const slices = this.getSlices(props);
+    const slices = this.getSlices(props, radius);
     const colors = d3Scale.scaleOrdinal(
       Array.isArray(colorScale) ? colorScale : Style.getColorScale(colorScale)
     );
 
     this.sumNodes(data);
 
-    const xScale = d3Scale.scaleLinear()
-      .range([0, Math.PI * 2]);
-
-    const yScale = d3Scale.scaleSqrt()
-      .range([0, radius]);
-
     const pathFunction = d3Shape.arc()
-      .startAngle((d) => xScale(d.x0))
-      .endAngle((d) => xScale(d.x1))
-      .innerRadius((d) => yScale(d.y0))
-      .outerRadius((d) => yScale(d.y1));
+      .startAngle((d) => d.x0)
+      .endAngle((d) => d.x1)
+      .innerRadius((d) => d.y0)
+      .outerRadius((d) => d.y1);
 
     return { colors, data, padding, pathFunction, radius, slices, style, totalSize: data.size };
   },
@@ -154,7 +148,7 @@ export default {
     return this.checkForValidText(text);
   },
 
-  getSlices(props) {
+  getSlices(props, radius) {
     const { data, minRadians, sortData, sumBy } = props;
     const compareFunction = this.getSort(sortData);
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
@@ -164,7 +158,9 @@ export default {
       })
       .sort(compareFunction);
 
-    const partition = d3Hierarchy.partition();
+    const partition = d3Hierarchy.partition()
+      .size([2 * Math.PI, radius]);
+
     const nodes = partition(root).descendants()
       .filter((d) => {
         return (d.x1 - d.x0) > minRadians;
