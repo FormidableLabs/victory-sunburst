@@ -14,8 +14,9 @@ export default {
     }
   },
 
-  getSliceStyle(datum, { colors, style }) {
-    const fill = this.getColor(datum, colors, style);
+  getSliceStyle(datum, calculatedValues) {
+    const { colors, style } = calculatedValues;
+    const fill = this.getSliceColor(datum, colors, style);
     return defaults({}, datum.style, { fill }, style.data);
   },
 
@@ -30,10 +31,6 @@ export default {
       }
     };
 
-    if (!displayRoot) {
-      slices[0].style = { ...slices[0].style, display: "none" };
-    }
-
     for (let index = 0, len = slices.length; index < len; index++) {
       const datum = slices[index];
       const eventKey = datum.eventKey || index;
@@ -46,6 +43,12 @@ export default {
         data: dataProps,
         labels: this.getLabelProps(props, dataProps, calculatedValues)
       };
+    }
+
+    if (!displayRoot) {
+      const rootProps = childProps[0];
+      rootProps.data.style.display = "none";
+      rootProps.labels.style.display = "none";
     }
 
     return childProps;
@@ -74,7 +77,7 @@ export default {
     return { colors, data, padding, pathFunction, radius, slices, style, totalSize: data.size };
   },
 
-  getColor(datum, colors, style) {
+  getSliceColor(datum, colors, style) {
     if (style && style.data && style.data.fill) {
       return style.data.fill;
     }
@@ -102,7 +105,7 @@ export default {
     const labelStyle = { padding: 0, ...style.labels };
     const position = index === 0 ? [0, 0] : pathFunction.centroid(slice);
     const orientation = this.getLabelOrientation(slice);
-    console.log(index, position);
+
     return {
       index, datum, data, slice, orientation,
       style: labelStyle,

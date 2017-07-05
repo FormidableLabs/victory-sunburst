@@ -29,7 +29,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { activeName, activeNodeIndex, clientX, clientY } = this.state;
+    const { activeName, activeNodeIndex } = this.state;
     return (
       <div>
         <VictorySunburst
