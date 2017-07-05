@@ -6,10 +6,6 @@ import * as d3Scale from "d3-scale";
 import { Helpers, Style } from "victory-core";
 
 export default {
-  degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
-  },
-
   checkForValidText(text) {
     if (text === undefined || text === null) {
       return text;
@@ -92,11 +88,8 @@ export default {
   },
 
   getLabelOrientation(slice) {
-    const radiansToDegrees = (radians) => {
-      return radians * (180 / Math.PI);
-    };
-    const start = radiansToDegrees(slice.startAngle);
-    const end = radiansToDegrees(slice.endAngle);
+    const start = this.radiansToDegrees(slice.x0);
+    const end = this.radiansToDegrees(slice.x1);
     const degree = start + (end - start) / 2;
     if (degree < 45 || degree > 315) {
       return "top";
@@ -156,7 +149,7 @@ export default {
     } else if (Array.isArray(props.labels)) {
       text = props.labels[index];
     } else {
-      text = isFunction(props.labels) ? props.labels(datum, totalSize) : datum.xName || datum._x;
+      text = isFunction(props.labels) ? props.labels(datum, totalSize) : datum.data.name;
     }
     return this.checkForValidText(text);
   },
@@ -188,6 +181,10 @@ export default {
         : sortData;
     }
     return compareFunction;
+  },
+
+  radiansToDegrees(radians) {
+    return radians * (180 / Math.PI);
   },
 
   sumNodes(node) {

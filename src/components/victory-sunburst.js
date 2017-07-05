@@ -138,7 +138,6 @@ class VictorySunburst extends React.Component {
     displayRoot: false,
     groupComponent: <g/>,
     labelComponent: <VictoryLabel/>,
-    labels: (d) => d.size,
     minRadians: 0.001,
     sortData: false,
     standalone: true,
