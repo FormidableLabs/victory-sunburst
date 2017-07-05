@@ -3,8 +3,8 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Helpers, PropTypes as CustomPropTypes, Slice, TextSize,
-  VictoryContainer, VictoryTheme, VictoryTooltip
+  addEvents, Helpers, PropTypes as CustomPropTypes, Slice,
+  VictoryContainer, VictoryTheme, VictoryLabel
 } from "victory-core";
 
 import SunburstHelpers from "./helper-methods";
@@ -78,6 +78,8 @@ class VictorySunburst extends React.Component {
     height: CustomPropTypes.nonNegative,
     labelComponent: PropTypes.element,
     labelProps: PropTypes.object,
+    labelRadius: PropTypes.oneOfType([ CustomPropTypes.nonNegative, PropTypes.func ]),
+    labels: PropTypes.oneOfType([ PropTypes.func, PropTypes.array ]),
     minRadians: CustomPropTypes.nonNegative,
     name: PropTypes.string,
     padding: PropTypes.oneOfType([
@@ -135,7 +137,8 @@ class VictorySunburst extends React.Component {
     dataComponent: <Slice/>,
     displayRoot: false,
     groupComponent: <g/>,
-    labelComponent: <VictoryTooltip/>,
+    labelComponent: <VictoryLabel/>,
+    labels: (d) => d.size,
     minRadians: 0.001,
     sortData: false,
     standalone: true,
@@ -156,33 +159,25 @@ class VictorySunburst extends React.Component {
     fallbackProps
   );
   static expectedComponents = [
-    "containerComponent", "dataComponent", "groupComponent"
+    "containerComponent", "dataComponent", "groupComponent", "labelComponent"
   ];
 
   renderSunburstData(props) {
-    const { activeNodeIndex, alwaysDisplayLabel, dataComponent, labelComponent } = props;
+    const { dataComponent, labelComponent } = props;
     const dataComponents = [];
-    let labelProps = {
-      key: "label",
-      ...SunburstHelpers.getLabelProps(props)
-    };
-
+    const labelComponents = [];
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
       const dataProps = this.getComponentProps(dataComponent, "data", index);
       dataComponents[index] = React.cloneElement(dataComponent, dataProps);
+
+      const labelProps = this.getComponentProps(labelComponent, "labels", index);
+      if (labelProps && labelProps.text !== undefined && labelProps.text !== null) {
+        labelComponents[index] = React.cloneElement(
+          labelComponent, { ...labelProps, renderInPortal: false }
+        );
+      }
     }
-
-    if (activeNodeIndex || alwaysDisplayLabel) {
-      const totalSize = dataComponents[0].props.datum.data.size;
-      const { name, size: dataSize } = dataComponents[activeNodeIndex || 0].props.datum.data;
-      const text = `${name}: ${dataSize} (${Math.round(dataSize / totalSize * 100)}%)`;
-      const { width } = TextSize.approximateTextSize(text, 14);
-      labelProps = { ...labelProps, active: true, text, width };
-    }
-
-    const tooltipComponent = React.cloneElement(labelComponent, labelProps);
-    const children = [...dataComponents, tooltipComponent];
-
+    const children = [...dataComponents, ...labelComponents];
     return this.renderGroup(props, children);
   }
 

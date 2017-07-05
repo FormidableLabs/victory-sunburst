@@ -1,11 +1,23 @@
 /* eslint-disable no-magic-numbers */
-import { defaults } from "lodash";
+import { defaults, isFunction } from "lodash";
 import * as d3Hierarchy from "d3-hierarchy";
 import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
 import { Helpers, Style } from "victory-core";
 
 export default {
+  degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
+  },
+
+  checkForValidText(text) {
+    if (text === undefined || text === null) {
+      return text;
+    } else {
+      return `${text}`;
+    }
+  },
+
   getSliceStyle(datum, { colors, style }) {
     const fill = this.getColor(datum, colors, style);
     return defaults({}, datum.style, { fill }, style.data);
@@ -34,7 +46,10 @@ export default {
         style: this.getSliceStyle(datum, calculatedValues)
       };
 
-      childProps[eventKey] = { data: dataProps };
+      childProps[eventKey] = {
+        data: dataProps,
+        labels: this.getLabelProps(props, dataProps, calculatedValues)
+      };
     }
 
     return childProps;
@@ -42,10 +57,9 @@ export default {
 
   getCalculatedValues(props) {
     const { colorScale, data, height, theme, width } = props;
-    const defaultStyles =
-      theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
+    const themeStyles = theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
     const componentStyles = defaults({}, props.style, { parent: { height, width } });
-    const style = Helpers.getStyles(componentStyles, defaultStyles);
+    const style = Helpers.getStyles(componentStyles, themeStyles);
     const padding = Helpers.getPadding(props);
     const radius = this.getRadius(props, padding);
     const slices = this.getSlices(props);
@@ -77,6 +91,42 @@ export default {
     return colors && colors((datum.children ? datum.data : datum.parent.data).name);
   },
 
+  getLabelOrientation(slice) {
+    const radiansToDegrees = (radians) => {
+      return radians * (180 / Math.PI);
+    };
+    const start = radiansToDegrees(slice.startAngle);
+    const end = radiansToDegrees(slice.endAngle);
+    const degree = start + (end - start) / 2;
+    if (degree < 45 || degree > 315) {
+      return "top";
+    } else if (degree >= 45 && degree < 135) {
+      return "right";
+    } else if (degree >= 135 && degree < 225) {
+      return "bottom";
+    } else {
+      return "left";
+    }
+  },
+
+  getLabelProps(props, dataProps, calculatedValues) {
+    const { index, datum, data, pathFunction, slice } = dataProps;
+    const labelStyle = { padding: 0, ...calculatedValues.style.labels };
+    const position = pathFunction.centroid(slice);
+    const orientation = this.getLabelOrientation(slice);
+
+    return {
+      index, datum, data, slice, orientation,
+      style: labelStyle,
+      x: Math.round(position[0]),
+      y: Math.round(position[1]),
+      text: this.getLabelText(props, datum, index),
+      textAnchor: labelStyle.textAnchor || this.getTextAnchor(orientation),
+      verticalAnchor: labelStyle.verticalAnchor || this.getVerticalAnchor(orientation),
+      angle: labelStyle.angle
+    };
+  },
+
   getRadius({ width, height }, padding) {
     return Math.min(
       width - padding.left - padding.right,
@@ -84,7 +134,34 @@ export default {
     ) / 2;
   },
 
-  getSlices({ data, minRadians, sortData, sumBy }) {
+  getTextAnchor(orientation) {
+    if (orientation === "top" || orientation === "bottom") {
+      return "middle";
+    }
+    return orientation === "right" ? "start" : "end";
+  },
+
+  getVerticalAnchor(orientation) {
+    if (orientation === "left" || orientation === "right") {
+      return "middle";
+    }
+    return orientation === "bottom" ? "start" : "end";
+  },
+
+  getLabelText(props, datum, index) {
+    let text;
+    if (datum.label) {
+      text = datum.label;
+    } else if (Array.isArray(props.labels)) {
+      text = props.labels[index];
+    } else {
+      text = isFunction(props.labels) ? props.labels(datum) : datum.xName || datum._x;
+    }
+    return this.checkForValidText(text);
+  },
+
+  getSlices(props) {
+    const { data, minRadians, sortData, sumBy } = props;
     const compareFunction = this.getSort(sortData);
     const root = d3Hierarchy.hierarchy(data, (d) => d.children)
       .sum((d) => {
@@ -110,23 +187,6 @@ export default {
         : sortData;
     }
     return compareFunction;
-  },
-
-  getLabelProps({ height, labelProps, width }) {
-    const labelHeight = 50;
-    return {
-      height: labelHeight,
-      flyoutStyle: {
-        fill: "white",
-        stroke: "lightgray",
-        strokeWidth: 0.5
-      },
-      pointerLength: 0,
-      width: 100,
-      x: width / 2,
-      y: height / 2 + labelHeight / 2,
-      ...labelProps
-    };
   },
 
   sumNodes(node) {

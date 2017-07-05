@@ -3,20 +3,18 @@ import React from "react";
 import { VictorySunburst } from "../src/index";
 // import flare from "./flare.js";
 
-const size = 500;
-
 export default class App extends React.Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = { clientX: 0, clientY: 0 };
     this.handleDataMouseOver = this.handleDataMouseOver.bind(this);
     this.handleDataMouseOut = this.handleDataMouseOut.bind(this);
   }
 
-  handleDataMouseOver(ev, props, index, parent) { // eslint-disable-line max-params
-    const { activeNodeIndex } = this.state;
-    let newState = { clientX: ev.clientX, clientY: ev.clientY };
-    if (!activeNodeIndex) {
+  // eslint-disable-next-line max-params
+  handleDataMouseOver({ clientX, clientY }, props, index, parent) {
+    let newState = { clientX, clientY };
+    if (!this.state.activeNodeIndex) {
       newState = {
         ...newState,
         activeName: parent.props.name,
@@ -35,8 +33,13 @@ export default class App extends React.Component {
     return (
       <div>
         <VictorySunburst
+          name="fixedTooltip"
           alwaysDisplayLabel
           activeNodeIndex={activeName === "fixedTooltip" ? activeNodeIndex : 0}
+          labels={({ data }) => {
+            return `${data.name}: ${data.size}`;
+            // (${Math.round(data.size / totalSize * 100)}%)
+          }}
           events={[{
             target: "data",
             eventHandlers: {
@@ -44,13 +47,12 @@ export default class App extends React.Component {
               onMouseOut: this.handleDataMouseOut
             }
           }]}
-          height={size}
-          name="fixedTooltip"
-          width={size}
         />
         <VictorySunburst
-          activeNodeIndex={activeName === "movingTooltip" ? activeNodeIndex : 0}
+          name="movingTooltip"
           colorScale="red"
+          labelProps={{ x: clientX, y: clientY }}
+          activeNodeIndex={activeName === "movingTooltip" ? activeNodeIndex : 0}
           events={[{
             target: "data",
             eventHandlers: {
@@ -58,13 +60,6 @@ export default class App extends React.Component {
               onMouseOut: this.handleDataMouseOut
             }
           }]}
-          labelProps={{
-            x: clientX - size,
-            y: clientY
-          }}
-          height={size}
-          name="movingTooltip"
-          width={size}
         />
       </div>
     );
