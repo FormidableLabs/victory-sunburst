@@ -81,7 +81,7 @@ export default {
       .innerRadius((d) => yScale(d.y0))
       .outerRadius((d) => yScale(d.y1));
 
-    return { colors, data, padding, pathFunction, radius, slices, style };
+    return { colors, data, padding, pathFunction, radius, slices, style, totalSize: data.size };
   },
 
   getColor(datum, colors, style) {
@@ -111,7 +111,8 @@ export default {
 
   getLabelProps(props, dataProps, calculatedValues) {
     const { index, datum, data, pathFunction, slice } = dataProps;
-    const labelStyle = { padding: 0, ...calculatedValues.style.labels };
+    const { style, totalSize } = calculatedValues;
+    const labelStyle = { padding: 0, ...style.labels };
     const position = pathFunction.centroid(slice);
     const orientation = this.getLabelOrientation(slice);
 
@@ -120,7 +121,7 @@ export default {
       style: labelStyle,
       x: Math.round(position[0]),
       y: Math.round(position[1]),
-      text: this.getLabelText(props, datum, index),
+      text: this.getLabelText(props, datum, totalSize, index),
       textAnchor: labelStyle.textAnchor || this.getTextAnchor(orientation),
       verticalAnchor: labelStyle.verticalAnchor || this.getVerticalAnchor(orientation),
       angle: labelStyle.angle
@@ -148,14 +149,14 @@ export default {
     return orientation === "bottom" ? "start" : "end";
   },
 
-  getLabelText(props, datum, index) {
+  getLabelText(props, datum, totalSize, index) { // eslint-disable-line max-params
     let text;
     if (datum.label) {
       text = datum.label;
     } else if (Array.isArray(props.labels)) {
       text = props.labels[index];
     } else {
-      text = isFunction(props.labels) ? props.labels(datum) : datum.xName || datum._x;
+      text = isFunction(props.labels) ? props.labels(datum, totalSize) : datum.xName || datum._x;
     }
     return this.checkForValidText(text);
   },

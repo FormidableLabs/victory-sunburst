@@ -36,9 +36,8 @@ export default class App extends React.Component {
           name="fixedTooltip"
           alwaysDisplayLabel
           activeNodeIndex={activeName === "fixedTooltip" ? activeNodeIndex : 0}
-          labels={({ data }) => {
-            return `${data.name}: ${data.size}`;
-            // (${Math.round(data.size / totalSize * 100)}%)
+          labels={(d, totalSize) => {
+            return `${d.data.name}: ${d.data.size} (${Math.round(d.data.size / totalSize * 100)}%)`;
           }}
           events={[{
             target: "data",
