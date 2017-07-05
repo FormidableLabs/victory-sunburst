@@ -100,9 +100,9 @@ export default {
     const { index, datum, data, pathFunction, slice } = dataProps;
     const { style, totalSize } = calculatedValues;
     const labelStyle = { padding: 0, ...style.labels };
-    const position = pathFunction.centroid(slice);
+    const position = index === 0 ? [0, 0] : pathFunction.centroid(slice);
     const orientation = this.getLabelOrientation(slice);
-
+    console.log(index, position);
     return {
       index, datum, data, slice, orientation,
       style: labelStyle,

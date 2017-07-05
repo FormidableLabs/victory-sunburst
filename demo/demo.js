@@ -48,9 +48,9 @@ export default class App extends React.Component {
           }]}
         />
         <VictorySunburst
+          displayRoot
           name="movingTooltip"
           colorScale="red"
-          labelProps={{ x: clientX, y: clientY }}
           activeNodeIndex={activeName === "movingTooltip" ? activeNodeIndex : 0}
           events={[{
             target: "data",
