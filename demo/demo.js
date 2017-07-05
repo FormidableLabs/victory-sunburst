@@ -1,7 +1,7 @@
 /* eslint-disable no-magic-numbers */
 import React from "react";
 import { VictorySunburst } from "../src/index";
-// import flare from "./flare.js";
+import flare from "./flare.js";
 
 export default class App extends React.Component {
   constructor() {
@@ -48,9 +48,12 @@ export default class App extends React.Component {
           }]}
         />
         <VictorySunburst
-          displayRoot
+          data={flare}
           name="movingTooltip"
           colorScale="red"
+          padding={80}
+          height={1000}
+          width={1000}
           activeNodeIndex={activeName === "movingTooltip" ? activeNodeIndex : 0}
           events={[{
             target: "data",

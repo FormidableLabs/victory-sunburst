@@ -171,7 +171,7 @@ The `name` prop is used to reference a component instance when defining shared e
 
 *A number* in radians used to filter out nodes too small to see. Nodes smaller than `minRadians` aren't displayed.
 
-*default:* `0.001`
+*default:* `0.01`
 
 #### padding
 

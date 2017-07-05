@@ -22,6 +22,7 @@ const fallbackProps = {
     "#000000"
   ],
   height: 400,
+  padding: 30,
   width: 400
 };
 
@@ -77,7 +78,6 @@ class VictorySunburst extends React.Component {
     groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
     labelComponent: PropTypes.element,
-    labelProps: PropTypes.object,
     labelRadius: PropTypes.oneOfType([ CustomPropTypes.nonNegative, PropTypes.func ]),
     labels: PropTypes.oneOfType([ PropTypes.func, PropTypes.array ]),
     minRadians: CustomPropTypes.nonNegative,
@@ -138,7 +138,7 @@ class VictorySunburst extends React.Component {
     displayRoot: false,
     groupComponent: <g/>,
     labelComponent: <VictoryLabel/>,
-    minRadians: 0.001,
+    minRadians: 0.01,
     sortData: false,
     standalone: true,
     style: {
