@@ -162,9 +162,10 @@ class VictorySunburst extends React.Component {
   ];
 
   renderSunburstData(props) {
-    const { dataComponent, labelComponent } = props;
+    const { displayRoot, dataComponent, labelComponent } = props;
     const dataComponents = [];
     const labelComponents = [];
+
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
       const dataProps = this.getComponentProps(dataComponent, "data", index);
       dataComponents[index] = React.cloneElement(dataComponent, dataProps);
@@ -176,6 +177,13 @@ class VictorySunburst extends React.Component {
         );
       }
     }
+
+    if (!displayRoot) {
+      const style = { display: "none" };
+      dataComponents[0] = React.cloneElement(dataComponents[0], { style });
+      labelComponents[0] = React.cloneElement(labelComponents[0], { active: false });
+    }
+
     const children = [...dataComponents, ...labelComponents];
     return this.renderGroup(props, children);
   }

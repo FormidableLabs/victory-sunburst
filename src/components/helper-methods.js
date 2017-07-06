@@ -23,7 +23,7 @@ export default {
   getBaseProps(props, fallbackProps) {
     props = Helpers.modifyProps(props, fallbackProps, "sunburst");
     const calculatedValues = this.getCalculatedValues(props);
-    const { displayRoot, height, standalone, width } = props;
+    const { height, standalone, width } = props;
     const { data, padding, pathFunction, radius, slices, style } = calculatedValues;
     const childProps = {
       parent: {
@@ -43,12 +43,6 @@ export default {
         data: dataProps,
         labels: this.getLabelProps(props, dataProps, calculatedValues)
       };
-    }
-
-    if (!displayRoot) {
-      const rootProps = childProps[0];
-      rootProps.data.style.display = "none";
-      rootProps.labels.style.display = "none";
     }
 
     return childProps;
