@@ -151,10 +151,6 @@ The `labelComponent` prop takes a component instance which will be used to rende
 
 *default:* `<VictoryTooltip/>`
 
-### labelRadius
-
-The `labelRadius` prop defines the radius of the arc that will be used for positioning each slice label. If this prop is not set, the label radius will default to the radius of the sunburst + label padding.
-
 ### labels
 
 The `labels` prop defines the labels that will appear for each slice. This prop should be given as an array or as a function of data. Label may also be specified on each data object.

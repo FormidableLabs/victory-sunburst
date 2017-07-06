@@ -80,7 +80,6 @@ class VictorySunburst extends React.Component {
     groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
     labelComponent: PropTypes.element,
-    labelRadius: PropTypes.oneOfType([ CustomPropTypes.nonNegative, PropTypes.func ]),
     labels: PropTypes.oneOfType([ PropTypes.func, PropTypes.array ]),
     minRadians: CustomPropTypes.nonNegative,
     name: PropTypes.string,
