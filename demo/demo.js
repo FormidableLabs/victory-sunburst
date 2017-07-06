@@ -8,12 +8,13 @@ export default class App extends React.Component {
   render() {
     return (
       <div>
+        <VictorySunburst />
         <VictorySunburst
           name="fixedLabel"
+          colorScale="blue"
           style={{
-            data: { cursor: "pointer", stroke: "white" },
             labels: {
-              fill: (datum, active) => { return active === false ? "none" : "#ADDFFF"; },
+              fill: (d) => { return !d.parent ? "#004B8F" : "#ADDFFF"; },
               textAnchor: "middle",
               verticalAnchor: "middle"
             }
@@ -22,19 +23,26 @@ export default class App extends React.Component {
         <VictorySunburst
           name="fixedTooltip"
           colorScale="red"
-          labelComponent={<VictoryTooltip active height={30} width={40} />}
+          labelComponent={<VictoryTooltip active={(d) => !!d.parent} height={30} width={40} />}
+          labels={(d) => d.data.size}
+          style={{
+            labels: { fill: "black" }
+          }}
         />
         <VictorySunburst
           name="hoverTooltip"
           colorScale="green"
           labelComponent={
             <VictoryTooltip
-              orientation="bottom" pointerLength={0} height={40} width={60}
-              x={0} y={0} dx={0} dy={-20}
+              active={(d) => !d.parent} orientation="bottom"
+              pointerLength={0} height={40} width={60} x={0} y={-20}
             />
           }
           labels={({ data: { name, size } }, totalSize) => {
             return `${name}: ${size}\n(${Math.round(size / totalSize * 100)}%)`;
+          }}
+          style={{
+            labels: { fill: "black" }
           }}
         />
       </div>
