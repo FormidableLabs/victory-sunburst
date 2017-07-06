@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { defaults, isFunction } from "lodash";
+import { defaultsDeep, isFunction, omit } from "lodash";
 import * as d3Hierarchy from "d3-hierarchy";
 import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
@@ -17,11 +17,11 @@ export default {
   getSliceStyle(datum, calculatedValues) {
     const { colors, style } = calculatedValues;
     const fill = this.getSliceColor(datum, colors, style);
-    return defaults({}, datum.style, { fill }, style.data);
+    return defaultsDeep({}, datum.style, { fill }, style.data);
   },
 
   getBaseProps(props, fallbackProps) {
-    props = Helpers.modifyProps(props, fallbackProps, "sunburst");
+    props = this.modifyProps(props, fallbackProps, "sunburst");
     const calculatedValues = this.getCalculatedValues(props);
     const { height, standalone, width } = props;
     const { data, padding, pathFunction, radius, slices, style } = calculatedValues;
@@ -49,10 +49,9 @@ export default {
   },
 
   getCalculatedValues(props) {
-    const { colorScale, data, height, theme, width } = props;
+    const { colorScale, data, theme } = props;
     const themeStyles = theme && theme.sunburst && theme.sunburst.style ? theme.sunburst.style : {};
-    const componentStyles = defaults({}, props.style, { parent: { height, width } });
-    const style = Helpers.getStyles(componentStyles, themeStyles);
+    const style = defaultsDeep({}, props.style, themeStyles);
     const padding = Helpers.getPadding(props);
     const radius = this.getRadius(props, padding);
     const slices = this.getSlices(props, radius);
@@ -178,6 +177,12 @@ export default {
 
   radiansToDegrees(radians) {
     return radians * (180 / Math.PI);
+  },
+
+  modifyProps(props, fallbackProps, role) {
+    const theme = props.theme && props.theme[role] ? props.theme[role] : {};
+    const themeProps = omit(theme, ["style"]);
+    return defaultsDeep({}, props, themeProps, fallbackProps);
   },
 
   sumNodes(node) {

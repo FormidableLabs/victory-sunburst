@@ -3,8 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Helpers, PropTypes as CustomPropTypes, Slice,
-  VictoryContainer, VictoryTheme, VictoryLabel
+  addEvents, PropTypes as CustomPropTypes, Slice, VictoryContainer, VictoryLabel
 } from "victory-core";
 
 import SunburstHelpers from "./helper-methods";
@@ -206,7 +205,7 @@ class VictorySunburst extends React.Component {
 
   render() {
     const { role } = this.constructor;
-    const props = Helpers.modifyProps(this.props, fallbackProps, role);
+    const props = SunburstHelpers.modifyProps(this.props, fallbackProps, role);
 
     if (this.shouldAnimate()) {
       return this.animateComponent(props, animationWhitelist);
