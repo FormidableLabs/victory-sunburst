@@ -172,9 +172,9 @@ class VictorySunburst extends React.Component {
     }
 
     if (!displayRoot) {
-      const style = { display: "none" };
-      dataComponents[0] = React.cloneElement(dataComponents[0], { style });
-      labelComponents[0] = React.cloneElement(labelComponents[0], { active: false });
+      dataComponents[0] = React.cloneElement(dataComponents[0], {
+        style: { visibility: "hidden" }
+      });
     }
 
     const children = [...dataComponents, ...labelComponents];
