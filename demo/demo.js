@@ -1,67 +1,41 @@
 /* eslint-disable no-magic-numbers */
 import React from "react";
+import { VictoryTooltip } from "victory-core";
 import { VictorySunburst } from "../src/index";
-import flare from "./flare.js";
+// import flare from "./flare.js";
 
 export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = { clientX: 0, clientY: 0 };
-    this.handleDataMouseOver = this.handleDataMouseOver.bind(this);
-    this.handleDataMouseOut = this.handleDataMouseOut.bind(this);
-  }
-
-  // eslint-disable-next-line max-params
-  handleDataMouseOver({ clientX, clientY }, props, index, parent) {
-    let newState = { clientX, clientY };
-    if (!this.state.activeNodeIndex) {
-      newState = {
-        ...newState,
-        activeName: parent.props.name,
-        activeNodeIndex: parseInt(index)
-      };
-    }
-    this.setState(newState);
-  }
-
-  handleDataMouseOut() {
-    this.setState({ activeName: null, activeNodeIndex: null });
-  }
-
   render() {
-    const { activeName, activeNodeIndex } = this.state;
     return (
       <div>
         <VictorySunburst
-          name="fixedTooltip"
-          alwaysDisplayLabel
-          activeNodeIndex={activeName === "fixedTooltip" ? activeNodeIndex : 0}
-          labels={(d, totalSize) => {
-            return `${d.data.name}: ${d.data.size} (${Math.round(d.data.size / totalSize * 100)}%)`;
-          }}
-          events={[{
-            target: "data",
-            eventHandlers: {
-              onMouseOver: this.handleDataMouseOver,
-              onMouseOut: this.handleDataMouseOut
+          name="fixedLabel"
+          style={{
+            data: { cursor: "pointer", stroke: "white" },
+            labels: {
+              fill: (datum, active) => { return active === false ? "none" : "#ADDFFF"; },
+              textAnchor: "middle",
+              verticalAnchor: "middle"
             }
-          }]}
+          }}
         />
         <VictorySunburst
-          data={flare}
-          name="movingTooltip"
+          name="fixedTooltip"
           colorScale="red"
-          padding={80}
-          height={1000}
-          width={1000}
-          activeNodeIndex={activeName === "movingTooltip" ? activeNodeIndex : 0}
-          events={[{
-            target: "data",
-            eventHandlers: {
-              onMouseOver: this.handleDataMouseOver,
-              onMouseOut: this.handleDataMouseOut
-            }
-          }]}
+          labelComponent={<VictoryTooltip active height={30} width={40} />}
+        />
+        <VictorySunburst
+          name="hoverTooltip"
+          colorScale="green"
+          labelComponent={
+            <VictoryTooltip
+              orientation="bottom" pointerLength={0} height={40} width={60}
+              x={0} y={0} dx={0} dy={-20}
+            />
+          }
+          labels={({ data: { name, size } }, totalSize) => {
+            return `${name}: ${size}\n(${Math.round(size / totalSize * 100)}%)`;
+          }}
         />
       </div>
     );

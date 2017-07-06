@@ -22,7 +22,7 @@ const fallbackProps = {
     "#000000"
   ],
   height: 400,
-  padding: 30,
+  padding: 20,
   width: 400
 };
 
@@ -48,8 +48,6 @@ class VictorySunburst extends React.Component {
   };
 
   static propTypes = {
-    activeNodeIndex: CustomPropTypes.nonNegative,
-    alwaysDisplayLabel: PropTypes.bool,
     animate: PropTypes.object,
     colorScale: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.string),
