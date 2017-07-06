@@ -23,6 +23,10 @@ const fallbackProps = {
   ],
   height: 400,
   padding: 20,
+  style: {
+    data: { cursor: "pointer", stroke: "white" },
+    labels: { fill: "white", textAnchor: "middle", verticalAnchor: "middle" }
+  },
   width: 400
 };
 
@@ -104,7 +108,7 @@ class VictorySunburst extends React.Component {
   };
 
   static defaultProps = {
-    colorScale: "blue",
+    colorScale: "grayscale",
     containerComponent: <VictoryContainer/>,
     data: {
       name: "A",
@@ -139,14 +143,7 @@ class VictorySunburst extends React.Component {
     minRadians: 0.01,
     sortData: false,
     standalone: true,
-    style: {
-      data: {
-        cursor: "pointer",
-        stroke: "white"
-      }
-    },
     sumBy: "size",
-    theme: VictoryTheme.grayscale,
     x: 0,
     y: 0
   };

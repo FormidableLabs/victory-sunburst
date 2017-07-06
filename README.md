@@ -48,7 +48,7 @@ The `animate` prop specifies props for VictoryAnimation and VictoryTransition to
 
 The colorScale prop defines a color scale to be applied to each slice of VictorySunburst. This prop should be given as an array of CSS colors, or as a string corresponding to one of the built in color scales: "grayscale", "qualitative", "heatmap", "warm", "cool", "red", "green", "blue". VictorySunburst will assign to each slice by index, unless they are explicitly specified in the data object. Colors will repeat when there are more slices than colors in the provided colorScale.
 
-*default:* `colorScale="blue"`
+*default:* `colorScale="grayscale"`
 
 #### containerComponent
 
@@ -214,7 +214,13 @@ The `style` prop defines the style of the component. The style prop should be gi
 
 **note:** custom `angle` and `verticalAnchor` properties maybe included in labels styles.
 
-*default (provided by default theme):* See [grayscale theme] for more detail
+*default:*
+```jsx
+  style={{
+    data: { cursor: "pointer", stroke: "white" },
+    labels: { fill: "white", textAnchor: "middle", verticalAnchor: "middle" }
+  }}
+```
 
 #### sumBy
 
