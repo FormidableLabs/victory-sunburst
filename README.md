@@ -8,7 +8,7 @@ Victory Sunburst
 ## Requirements
 Projects using Victory should also depend on [React] and [prop-types].
 
-##Examples
+## Examples
 
 The plain component has baked-in sample data and defaults, so rendering the sunburst with no custom properties, like so:
 
