@@ -3,10 +3,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { partialRight } from "lodash";
 import {
-  addEvents, Helpers, PropTypes as CustomPropTypes, VictoryContainer, VictoryTheme
+  addEvents, PropTypes as CustomPropTypes, Slice, VictoryContainer, VictoryLabel
 } from "victory-core";
 
-import Arc from "./arc";
 import SunburstHelpers from "./helper-methods";
 
 const fallbackProps = {
@@ -22,7 +21,11 @@ const fallbackProps = {
     "#000000"
   ],
   height: 400,
-  padding: 30,
+  padding: 20,
+  style: {
+    data: { cursor: "pointer", stroke: "white" },
+    labels: { fill: "white", textAnchor: "middle", verticalAnchor: "middle" }
+  },
   width: 400
 };
 
@@ -58,14 +61,14 @@ class VictorySunburst extends React.Component {
     containerComponent: PropTypes.element,
     data: PropTypes.object,
     dataComponent: PropTypes.element,
-    displayCore: PropTypes.bool,
+    displayRoot: PropTypes.bool,
     eventKey: PropTypes.oneOfType([
       PropTypes.func,
       CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
       PropTypes.string
     ]),
     events: PropTypes.arrayOf(PropTypes.shape({
-      target: PropTypes.oneOf(["data", "parent"]),
+      target: PropTypes.oneOf(["data", "labels", "parent"]),
       eventKey: PropTypes.oneOfType([
         PropTypes.func,
         CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
@@ -75,7 +78,10 @@ class VictorySunburst extends React.Component {
     })),
     groupComponent: PropTypes.element,
     height: CustomPropTypes.nonNegative,
+    labelComponent: PropTypes.element,
+    labels: PropTypes.oneOfType([ PropTypes.func, PropTypes.array ]),
     minRadians: CustomPropTypes.nonNegative,
+    name: PropTypes.string,
     padding: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.shape({
@@ -95,44 +101,49 @@ class VictorySunburst extends React.Component {
     sumBy: PropTypes.oneOf(["count", "size"]),
     theme: PropTypes.object,
     width: CustomPropTypes.nonNegative,
-    x: PropTypes.oneOfType([
-      PropTypes.func,
-      CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.string)
-    ]),
-    y: PropTypes.oneOfType([
-      PropTypes.func,
-      CustomPropTypes.allOfType([CustomPropTypes.integer, CustomPropTypes.nonNegative]),
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.string)
-    ])
+    x: PropTypes.number,
+    y: PropTypes.number
   };
 
   static defaultProps = {
-    colorScale: "blue",
+    colorScale: "grayscale",
     containerComponent: <VictoryContainer/>,
     data: {
       name: "A",
       children: [
-        { name: "B1", size: 5 },
-        { name: "B2", size: 10 },
-        { name: "B3", size: 5 }
+        { name: "A1", size: 5 },
+        {
+          name: "A2",
+          children: [
+            { name: "A2a", size: 4 },
+            {
+              name: "A2b",
+              children: [
+                { name: "A2b1", size: 4 },
+                { name: "A2b2", size: 4 }
+              ]
+            }
+          ]
+        },
+        {
+          name: "A3",
+          children: [
+            { name: "A3a", size: 3 },
+            { name: "A3b", size: 5 }
+          ]
+        }
       ]
     },
-    dataComponent: <Arc/>,
-    displayCore: false,
+    dataComponent: <Slice/>,
+    displayRoot: false,
     groupComponent: <g/>,
-    minRadians: 0.001,
+    labelComponent: <VictoryLabel/>,
+    minRadians: 0.01,
+    sortData: false,
     standalone: true,
-    style: {
-      data: {
-        cursor: "pointer",
-        stroke: "white"
-      }
-    },
     sumBy: "size",
-    theme: VictoryTheme.grayscale
+    x: 0,
+    y: 0
   };
 
   static getBaseProps = partialRight(
@@ -140,19 +151,34 @@ class VictorySunburst extends React.Component {
     fallbackProps
   );
   static expectedComponents = [
-    "containerComponent", "dataComponent", "groupComponent"
+    "containerComponent", "dataComponent", "groupComponent", "labelComponent"
   ];
 
   renderSunburstData(props) {
-    const { dataComponent } = props;
+    const { displayRoot, dataComponent, labelComponent } = props;
     const dataComponents = [];
+    const labelComponents = [];
 
     for (let index = 0, len = this.dataKeys.length; index < len; index++) {
       const dataProps = this.getComponentProps(dataComponent, "data", index);
       dataComponents[index] = React.cloneElement(dataComponent, dataProps);
+
+      const labelProps = this.getComponentProps(labelComponent, "labels", index);
+      if (labelProps && labelProps.text !== undefined && labelProps.text !== null) {
+        labelComponents[index] = React.cloneElement(
+          labelComponent, { ...labelProps, renderInPortal: false }
+        );
+      }
     }
 
-    return this.renderGroup(props, dataComponents);
+    if (!displayRoot) {
+      dataComponents[0] = React.cloneElement(dataComponents[0], {
+        style: { visibility: "hidden" }
+      });
+    }
+
+    const children = [...dataComponents, ...labelComponents];
+    return this.renderGroup(props, children);
   }
 
   renderGroup(props, children) {
@@ -179,7 +205,7 @@ class VictorySunburst extends React.Component {
 
   render() {
     const { role } = this.constructor;
-    const props = Helpers.modifyProps(this.props, fallbackProps, role);
+    const props = SunburstHelpers.modifyProps(this.props, fallbackProps, role);
 
     if (this.shouldAnimate()) {
       return this.animateComponent(props, animationWhitelist);

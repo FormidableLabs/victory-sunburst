@@ -1,102 +1,120 @@
+/* global window */
 /* eslint-disable no-magic-numbers */
 import React from "react";
-import filesize from "filesize";
+import { VictoryTooltip } from "victory-core";
 import { VictorySunburst } from "../src/index";
-import flare from "./flare.js";
+// import flare from "./flare.js";
 
-// import { buildHierarchy } from "./utils";
-// const data = buildHierarchy(stats.modules);
-
-const fontSize = 14;
-const lineHeight = fontSize * 1.4;
-const size = 700;
-const tooltipHeight = fontSize * 6;
-const tooltipOffset = 10;
-
-const svgStyles = {
-  height: size,
-  overflow: "visible",
-  viewBox: `0 0 ${size} ${size}`,
-  width: size
-};
-const rectStyles = {
-  fill: "white",
-  height: tooltipHeight,
-  opacity: 0.8,
-  rx: 4,
-  ry: 4,
-  stroke: "gray",
-  strokeOpacity: 0.5,
-  strokeWidth: 0.5,
-  width: 210
-};
-const textStyles = {
-  fill: "black",
-  fontFamily: "Helvetica",
-  fontSize
-};
-const tspanStyles = {
-  alignmentBaseline: "middle",
-  x: 18,
-  y: tooltipHeight / 2
-};
+const size = 400;
 
 export default class App extends React.Component {
   constructor() {
     super();
     this.state = {};
-    this.handleDataMouseOver = this.handleDataMouseOver.bind(this);
+    this.handleDataMouseMove = this.handleDataMouseMove.bind(this);
     this.handleDataMouseOut = this.handleDataMouseOut.bind(this);
   }
 
-  handleDataMouseOver({ clientX, clientY }, { datum }) {
-    const { activeNode } = this.state;
-    const newState = { clientX, clientY };
-    if (!activeNode) {
-      newState.activeNode = datum;
-    }
-    this.setState(newState);
+  componentDidMount() {
+    const { top, left } = this.sunburst.getBoundingClientRect();
+    this.x = left;
+    this.y = top;
+  }
+
+  handleDataMouseMove(ev, props) {
+    const { datum: { data } } = props;
+    this.setState({
+      activeText: `${data.name}: ${data.size}`,
+      clientX: ev.clientX,
+      clientY: ev.clientY + window.scrollY
+    });
   }
 
   handleDataMouseOut() {
-    this.setState({ activeNode: null });
+    this.setState({ clientX: null, clientY: null });
   }
 
   render() {
-    const { activeNode, clientX, clientY } = this.state;
-    const translate = `translate(${clientX + tooltipOffset},${clientY + tooltipOffset})`;
+    const { activeText, clientX, clientY } = this.state;
 
     return (
-      <svg {...svgStyles}>
+      <div>
+        <VictorySunburst/>
         <VictorySunburst
-          data={flare}
-          events={[{
-            target: "data",
-            eventHandlers: {
-              onMouseOver: this.handleDataMouseOver,
-              onMouseOut: this.handleDataMouseOut
+          name="fixedLabel"
+          colorScale="blue"
+          style={{
+            labels: {
+              fill: (d) => { return !d.parent ? "#004B8F" : "#ADDFFF"; },
+              textAnchor: "middle",
+              verticalAnchor: "middle"
             }
-          }]}
-          height={size}
-          width={size}
+          }}
         />
-        {activeNode ? (
-          <g transform={translate}>
-            <rect {...rectStyles} />
-            <text {...textStyles}>
-              <tspan dy={-lineHeight} fontWeight="bold" {...tspanStyles}>
-                {activeNode.data.name}
-              </tspan>
-              <tspan dy={0} {...tspanStyles}>
-                {`${(activeNode.data.size / activeNode.parent.data.size * 100).toFixed(2)}%`}
-              </tspan>
-              <tspan dy={lineHeight} {...tspanStyles}>
-                {filesize(activeNode.data.size)}
-              </tspan>
-            </text>
-          </g>
-        ) : null}
-      </svg>
+        <VictorySunburst
+          name="fixedTooltip"
+          colorScale="red"
+          labelComponent={
+            <VictoryTooltip
+              active={(d) => !!d.parent}
+              height={30}
+              style={{ fill: "black" }}
+              width={40}
+            />
+          }
+          labels={(d) => d.data.size}
+        />
+        <VictorySunburst
+          name="fixedHoverTooltip"
+          colorScale="green"
+          labelComponent={
+            <VictoryTooltip
+              active={(d) => !d.parent}
+              height={40}
+              orientation="bottom"
+              pointerLength={0}
+              style={{ fill: "black" }}
+              width={60}
+              x={0}
+              y={-20}
+            />
+          }
+          labels={(datum, totalSize) => {
+            const { data } = datum;
+            return `${data.name}: ${data.size}\n(${Math.round(data.size / totalSize * 100)}%)`;
+          }}
+        />
+        <svg
+          height={size}
+          ref={(el) => { this.sunburst = el; }}
+          style={{ overflow: "visible" }}
+          viewBox={`0 0 ${size} ${size}`}
+          width={size}
+        >
+          <VictorySunburst
+            name="movingHoverTooltip"
+            colorScale="qualitative"
+            events={[{
+              target: "data",
+              eventHandlers: {
+                onMouseMove: this.handleDataMouseMove,
+                onMouseOut: this.handleDataMouseOut
+              }
+            }]}
+            standalone={false}
+            style={{ labels: { display: "none" } }}
+          />
+          <VictoryTooltip
+            active={!!clientX && !!clientY}
+            pointerLength={0}
+            renderInPortal={false}
+            style={{ fill: "black" }}
+            text={activeText}
+            x={clientX - this.x}
+            y={clientY - this.y}
+          />
+        </svg>
+      </div>
     );
   }
 }
