@@ -166,13 +166,9 @@ export default {
   },
 
   getSort(sortData) {
-    let compareFunction = null;
-    if (sortData) {
-      compareFunction = sortData === true
-        ? (a, b) => { return b.value - a.value; }
-        : sortData;
+    if (sortData === true) {
+      return (a, b) => b.value - a.value;
     }
-    return compareFunction;
   },
 
   radiansToDegrees(radians) {
