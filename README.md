@@ -280,3 +280,8 @@ This project is in a pre-release state. We're hard at work fixing bugs and impro
 [grayscale theme]: https://github.com/FormidableLabs/victory-core/blob/master/src/victory-theme/grayscale.js
 [trav_img]: https://api.travis-ci.org/FormidableLabs/victory-sunburst.svg
 [trav_site]: https://travis-ci.org/FormidableLabs/victory-sunburst
+
+
+## Maintenance Status
+
+**Archived:** This project is no longer maintained by Formidable. We are no longer responding to issues or pull requests unless they relate to security concerns. We encourage interested developers to fork this project and make it their own!
